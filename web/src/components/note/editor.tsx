@@ -24,17 +24,14 @@ const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
 
 
     useEffect(() => {
-        const handleSave = async (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-                e.preventDefault();
-                await editFile(fileId, undefined, blocks);
-                setDirtyState({ fileId, isDirty: false });
-            }
+        const handler = async () => {
+            await editFile(fileId, undefined, blocks);
+            setDirtyState({ fileId, isDirty: false });
         };
 
-        window.addEventListener("keydown", handleSave);
-    return () => window.removeEventListener("keydown", handleSave);
+        window.app.onSave(handler);
     }, [blocks, fileId]);
+
 
     const updateBlock = (index: number, updated: BlockType) => {
         setBlocks((prev) =>

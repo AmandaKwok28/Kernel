@@ -4,7 +4,6 @@ import Prism from "prismjs";
 import "prismjs/components/prism-python";
 import "@/styles/prism-github-dark.css";
 import { Copy, Play, RotateCcw } from "lucide-react";
-import { restartKernel, runCell } from "../kernels";
 import { toast } from "sonner";
 
 
@@ -20,7 +19,7 @@ const TEXT_SIZE = "10px";
 const LINE_HEIGHT = "1.6";
 
 
-const CodeBlock = ({ fileId, block, onUpdate }: Props) => {
+const CodeBlock = ({ block, onUpdate }: Props) => {
     // local state
     const [code, setCode] = useState(block.code);
     const [output, setOutput] = useState("");
@@ -91,9 +90,28 @@ const CodeBlock = ({ fileId, block, onUpdate }: Props) => {
     };
 
     const handleRun = async () => {
-        const res = await runCell(fileId, code);
-        setOutput(res.stdout);
-        setError(res.stderr);
+        // const res = await runCell(code);
+        // setOutput(res.stdout);
+        // setError(res.stderr);
+
+        try {
+            const res = await window.kernel.run(code);
+
+            if (!res.ok) {
+                setError(res.error ?? "");
+                setOutput("");
+                return;
+            }
+
+            const output = (res.stdout ?? "") + (res.result ? `${res.result}\n` : "");
+
+            setOutput(output);
+            setError(res.stderr ?? "");
+        } catch (err: any) {
+            setError(err?.message ?? "Execution Error");
+            setOutput("");
+        }
+        
     };
 
     const handleCopy = async () => {
@@ -115,9 +133,10 @@ const CodeBlock = ({ fileId, block, onUpdate }: Props) => {
         }
     }
 
-    const handleRefresh = () => {
-        restartKernel(fileId);
+    const handleRefresh = async () => {
+        await window.kernel.reset();
         setOutput("");
+        setError("");
     }
 
     // #343335

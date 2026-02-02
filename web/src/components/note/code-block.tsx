@@ -24,6 +24,7 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
     const [code, setCode] = useState(block.code);
     const [output, setOutput] = useState("");
     const [error, setError] = useState("");
+    const [images, setImages] = useState<string[]>([]);
 
     // refs
     const codeMirrorRef = useRef<HTMLDivElement>(null);
@@ -90,9 +91,6 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
     };
 
     const handleRun = async () => {
-        // const res = await runCell(code);
-        // setOutput(res.stdout);
-        // setError(res.stderr);
 
         try {
             const res = await window.kernel.run(code);
@@ -100,6 +98,7 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
             if (!res.ok) {
                 setError(res.error ?? "");
                 setOutput("");
+                setImages([]);
                 return;
             }
 
@@ -107,6 +106,8 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
 
             setOutput(output);
             setError(res.stderr ?? "");
+            setImages(res.images ?? []);
+
         } catch (err: any) {
             setError(err?.message ?? "Execution Error");
             setOutput("");
@@ -137,12 +138,13 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
         await window.kernel.reset();
         setOutput("");
         setError("");
+        setImages([]);
     }
 
     // #343335
     return (
-        <div className="flex flex-row w-full gap-4">
-            <div className="relative w-[500px] bg-[#151417] rounded-sm overflow-hidden ml-4">
+        <div className="flex flex-col lg:flex-row w-full gap-4 px-3 py-1">
+            <div className="relative w-full lg:w-1/2 bg-[#151417] rounded-sm overflow-hidden">
                 <div className="absolute top-2 right-2 z-20 flex gap-2">
                     <button
                         onClick={handleRun}
@@ -214,7 +216,7 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
             </div>
             
             {/* output block */}
-            <div className="relative bg-[#343335] rounded-sm text-white flex-1 mr-4">
+            <div className="relative bg-[#343335] rounded-sm text-white w-full lg:w-1/2 mr-4">
 
                 <div className="absolute top-2 right-2 z-20 flex gap-2">
                     <button
@@ -231,8 +233,24 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
                     className="pointer-events-none whitespace-pre-wrap break-words p-4"
                     style={textStyle}
                 >
-                    {output + "\n" + error}
+                    {output.replace(/\s+$/, "")}
                 </div>
+
+                <div className="p-4 flex flex-col">
+                    {images.map((img, i) => (
+                        <img
+                            key={i}
+                            src={`data:image/png;base64,${img}`}
+                        />
+                    ))}
+                </div>
+
+                {error && (
+                    <div className="p-4 whitespace-pre-wrap text-red-400">
+                        {error}
+                    </div>
+                )}
+
             </div>
         </div>
     );

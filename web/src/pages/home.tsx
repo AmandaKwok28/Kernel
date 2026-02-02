@@ -118,16 +118,16 @@ const Home = () => {
 
 
     const blocks = selectedFile ? selectedFile.blocks : [];
-    
+    // #252524
     return (
         <div className="flex flex-col h-screen overflow-hidden">
-            <div id='header' className="flex min-w-screen h-[30px] bg-[#494c4a] "> 
+            <div id='header' className="flex min-w-screen h-[25px] bg-[#494c4a] "> 
             </div>
 
             <div id="main-body" className="flex flex-row flex-1 w-full overflow-hidden">
                 <div 
                     id='sidebar' 
-                    className="flex flex-col items-center w-[50px] bg-[#434744] h-full p-4 gap-4"
+                    className="flex flex-col items-center w-[40px] bg-[#323532] h-full p-4 gap-4"
                 >
                     <div className="text-gray-400 hover:text-white cursor-pointer" onClick={() => setOpen(!open)}> 
                         <File /> 
@@ -135,7 +135,7 @@ const Home = () => {
                     <div className="text-gray-400 hover:text-white cursor-pointer"> <Search /> </div>
                 </div>
                 {open && (
-                    <div className="flex flex-col h-full w-[300px] bg-[#2c2f2d] gap-1">
+                    <div className="flex flex-col h-full w-[300px] bg-[#242424] gap-1">
                         <div className="flex flex-row w-full text-gray-300 justify-end gap-2 p-4">
                             <div className="text-gray-300 hover:text-white cursor-pointer">
                                 <FilePlusCorner size="18px" onClick={handleNewFile}/>
@@ -227,8 +227,8 @@ const Home = () => {
                         )}
                     </div>
                 )}
-                <div id="main-content" className="flex flex-col w-full h-full bg-[#242625] items-center justify-center">
-                    {!selectedFile && <div className="text-[#1e1e1d] flex flex-col gap-4 items-center">
+                <div id="main-content" className="flex flex-col w-full h-full bg-[#1d1d1d] items-center justify-center">
+                    {!selectedFile && <div className="text-[#252524] flex flex-col gap-4 items-center">
                         <FilePlusCorner size="200px"/>
                         <div className="text-[#8c948f] text-sm"> No notes selected </div>
                     </div>}

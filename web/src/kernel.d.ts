@@ -10,6 +10,7 @@ declare global {
         result?: string;
         error?: string;
         id?: number;
+        images?: string[]; 
       }>;
       reset: () => Promise<any>;
     };

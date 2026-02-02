@@ -2,8 +2,11 @@ import type { BlockType } from "@/data/types";
 import BlockRenderer from "./block-renderer";
 import { useEffect, useState } from "react";
 import { setDirtyState } from "@/lib/store";
-import { Code, TextAlignJustify, Trash } from "lucide-react";
+import { Code, Pencil, TextAlignJustify, Trash } from "lucide-react";
 import { useFiles } from "@/mutations/files";
+import { closestCenter, DndContext, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import SortableBlock from "./sortable-block";
 
 type Props = {
     fileId: number;
@@ -14,6 +17,7 @@ type Props = {
 const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
 
     const [blocks, setBlocks] = useState<BlockType[]>(initialBlocks);
+    const [editMode, setEditMode] = useState<boolean>(false);
     
     // mutations
     const { editFile } = useFiles();
@@ -40,10 +44,30 @@ const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
         setDirtyState({ fileId, isDirty: true})
     };
 
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over || active.id === over.id) {
+            return;
+        }
+
+        setBlocks((prev) => {
+            const oldIndex = prev.findIndex((b) => b.id === active.id);
+            const newIndex = prev.findIndex((b) => b.id === over.id);
+
+            const updated = [...prev];
+            const [moved] = updated.splice(oldIndex, 1);
+            updated.splice(newIndex, 0, moved);
+
+            return updated;
+        });
+
+        setDirtyState({ fileId, isDirty: true});
+    }
+
     // #333433
     return (
         <div className="w-full h-full flex flex-col bg-[#1e1e1d] p-4 overflow-x-hidden overflow-y-auto overscroll-none">
-            <div className="w-full flex flex-row gap-8">
+            <div className="w-full flex flex-row gap-8 mb-4">
                 <div id='note-title' className="bg-[#424442] w-[200px] px-4 py-1 rounded-sm text-[12px] text-white">
                     {fileName}
                 </div>
@@ -87,19 +111,40 @@ const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
                     >
                         <Trash size={15}/>
                     </div>
+                    <div
+                        className={`cursor-pointer bg-[#333433] p-1 rounded-sm ${
+                            editMode ? "text-white" : "text-gray-500 hover:text-white"
+                        }`}
+                        title="edit mode: reorder blocks"
+                        onClick={() => setEditMode((m) => !m)}
+                    >
+                        <Pencil size={15}/>
+                    </div>
                 </div>
             </div>
             
-            <div className="flex flex-col gap-2 pb-[500px]">
+            <DndContext
+                collisionDetection={closestCenter}
+                onDragEnd={editMode ? handleDragEnd : undefined}
+            >
+            <SortableContext
+                items={blocks.map((b) => b.id)}
+                strategy={verticalListSortingStrategy}
+            >
+                <div className="flex flex-col gap-2 pb-[500px]">
                 {blocks.map((block, i) => (
-                    <BlockRenderer 
-                        key={block.id}
+                    <SortableBlock key={block.id} id={block.id} enabled={editMode}>
+                    <BlockRenderer
                         fileId={fileId}
                         block={block}
                         onUpdate={(updated) => updateBlock(i, updated)}
                     />
+                    </SortableBlock>
                 ))}
-            </div>
+                </div>
+            </SortableContext>
+            </DndContext>
+
         </div>
     )
 }

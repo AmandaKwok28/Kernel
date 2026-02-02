@@ -140,7 +140,7 @@ const TextBlock = ({ block, onUpdate } : Props) => {
 
             <div
                 ref={mirrorRef}
-                className="whitespace-pre-wrap break-words p-4"
+                className="whitespace-pre-wrap break-words px-4"
                 style={textStyle}
             >
                 {value + "\n"}
@@ -148,7 +148,7 @@ const TextBlock = ({ block, onUpdate } : Props) => {
 
             {/* Highlight layer */}
             <pre
-                className="absolute inset-0 p-4 whitespace-pre-wrap break-words pointer-events-none text-gray-300"
+                className="absolute inset-0 px-4 whitespace-pre-wrap break-words pointer-events-none text-gray-300"
                 style={textStyle}
                 dangerouslySetInnerHTML={{ __html: highlight(value) }}
             />
@@ -172,7 +172,7 @@ const TextBlock = ({ block, onUpdate } : Props) => {
                     outline-none
                     text-transparent
                     caret-gray-200
-                    p-4
+                    px-4
                     "
                 style={textStyle}
             />

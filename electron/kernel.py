@@ -1,4 +1,7 @@
 import sys, json, traceback, io, contextlib, ast
+import base64
+import matplotlib.pyplot as plt
+from io import BytesIO
 
 GLOBALS = {"__name__": "__main__"}
 
@@ -23,6 +26,18 @@ def eval_last_expr(code: str):
     else:
         exec(compile(tree, "<cell>", "exec"), GLOBALS, GLOBALS)
         return None
+    
+def capture_figures():
+    images = []
+    for fig_num in plt.get_fignums():
+        fig = plt.figure(fig_num)
+        buf = BytesIO()
+        fig.savefig(buf, format="png", bbox_inches="tight")
+        buf.seek(0)
+        images.append(base64.b64encode(buf.read()).decode("utf-8"))
+        plt.close(fig)
+    return images
+
 
 def main():
     # Read one JSON object per line (JSONL)
@@ -51,13 +66,17 @@ def main():
             with contextlib.redirect_stdout(stdout_buf), contextlib.redirect_stderr(stderr_buf):
                 result = eval_last_expr(code)
 
+            images = capture_figures()
+
             out = {
                 "id": msg_id,
                 "ok": True,
                 "stdout": stdout_buf.getvalue(),
                 "stderr": stderr_buf.getvalue(),
                 "result": None if result is None else repr(result),
+                "images": images,  
             }
+
             sys.stdout.write(json.dumps(out) + "\n")
             sys.stdout.flush()
 

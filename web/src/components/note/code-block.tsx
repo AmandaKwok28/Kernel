@@ -5,6 +5,8 @@ import "prismjs/components/prism-python";
 import "@/styles/prism-github-dark.css";
 import { Copy, Play, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { useStore } from "@nanostores/react";
+import { $fontSize } from "@/lib/themes";
 
 
 type CodeBlockType = Extract<BlockType, { type: "code" }>;
@@ -15,7 +17,6 @@ type Props = {
     onUpdate: (updatedBlock: BlockType) => void;
 };
 
-const TEXT_SIZE = "10px";
 const LINE_HEIGHT = "1.6";
 
 
@@ -31,9 +32,12 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
     const outputMirrorRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    // store
+    const fontSize = useStore($fontSize);
+
     // styling
     const textStyle = {
-        fontSize: TEXT_SIZE,
+        fontSize: fontSize,
         lineHeight: LINE_HEIGHT,
         fontFamily: "monospace",
         WebkitFontSmoothing: "antialiased" as const,
@@ -141,10 +145,9 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
         setImages([]);
     }
 
-    // #343335
     return (
         <div className="flex flex-col lg:flex-row w-full gap-4 px-3 py-1">
-            <div className="relative w-full lg:w-1/2 bg-[#151417] rounded-sm overflow-hidden">
+            <div className="relative w-full lg:w-1/2 bg-[var(--bg-code)] rounded-sm overflow-hidden">
                 <div className="absolute top-2 right-2 z-20 flex gap-2">
                     <button
                         onClick={handleRun}

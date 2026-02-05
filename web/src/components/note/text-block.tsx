@@ -8,7 +8,7 @@ type Props = {
     onUpdate: (updatedBlock: BlockType) => void;
 }
 
-const TEXT_SIZE = "10px";
+const TEXT_SIZE = "9px";
 const LINE_HEIGHT = "1.6";
 
 // helpers
@@ -22,11 +22,6 @@ const escapeHtml = (s: string) =>
 // basically an inline markdown highlighter. Performance is O(n) but since notes are small, it's fine
 const highlight = (text: string) => {
 
-    // keeping track of colors
-    const numbers = "#68a7ef";
-    const code = "#4ed4f9";
-    const codebg = "#2c2f2d";
-
     return text
         .split("\n")
         .map((line) => {
@@ -36,7 +31,7 @@ const highlight = (text: string) => {
             // highlight inline code: `code`
             safe = safe.replace(
                 /`([^`]+)`/g,
-                `<span class="px-1 rounded font-mono" style="color: ${code}; background: ${codebg};">$1</span>`
+                `<span class="px-1 rounded font-mono bg-[var(--code-highlight)] text-[var(--code-text-highlight)]">$1</span>`
             );
 
             // number list recognition
@@ -46,18 +41,23 @@ const highlight = (text: string) => {
 
                 return (
                     indent +
-                    `<span style="color: ${numbers}"">${number}</span>` +
+                    `<span class="text-[var(--number-highlight)]">${number}</span>` +
                     space +
                     rest
                 );
             }
 
             // highlight dash list items
-            const match = safe.match(/^([\t ]*)-(.*)$/);
+            const match = safe.match(/^([\t ]*)-(\s*)(.*)$/);
 
             if (match) {
-                const [, indent, rest] = match;
-                return `${indent}<span class="text-[#247afc]">-</span>${rest}`;
+            const [, indent, space, rest] = match;
+            return (
+                indent +
+                `<span class="text-[var(--dash-highlight)]">•</span>` +
+                space +
+                rest
+            );
             }
 
             return safe;
@@ -79,7 +79,8 @@ const TextBlock = ({ block, onUpdate } : Props) => {
         fontSize: TEXT_SIZE,
         lineHeight: LINE_HEIGHT,
         fontFamily: "monospace",
-        WebkitFontSmoothing: "antialiased" as const,
+        letterSpacing: "-0.03em",
+        WebkitFontSmoothing: "antialiased" as const,  
     };
 
     // Sync when switching blocks
@@ -136,11 +137,11 @@ const TextBlock = ({ block, onUpdate } : Props) => {
     };
 
     return (
-        <div className="relative w-full bg-[#1e1e1d]">
+        <div className={`relative w-full`} style={{backgroundColor: "var(--bg-main)"}}>
 
             <div
                 ref={mirrorRef}
-                className="whitespace-pre-wrap break-words px-4"
+                className="whitespace-pre-wrap break-words px-4 invisible"
                 style={textStyle}
             >
                 {value + "\n"}
@@ -148,9 +149,9 @@ const TextBlock = ({ block, onUpdate } : Props) => {
 
             {/* Highlight layer */}
             <pre
-                className="absolute inset-0 px-4 whitespace-pre-wrap break-words pointer-events-none text-gray-300"
+                className="absolute inset-0 px-4 whitespace-pre-wrap break-words pointer-events-none text-[var(--note-text-color)]"
                 style={textStyle}
-                dangerouslySetInnerHTML={{ __html: highlight(value) }}
+                dangerouslySetInnerHTML={{ __html: highlight(value)}}
             />
 
             {/* Input layer */}
@@ -164,7 +165,6 @@ const TextBlock = ({ block, onUpdate } : Props) => {
                 onKeyDown={handleKeyDown}
                 placeholder="Start typing..."
                 className="
-                    leading-none
                     absolute inset-0
                     w-full h-full
                     bg-transparent
@@ -175,6 +175,7 @@ const TextBlock = ({ block, onUpdate } : Props) => {
                     px-4
                     "
                 style={textStyle}
+                spellCheck={false}
             />
         </div>
     )

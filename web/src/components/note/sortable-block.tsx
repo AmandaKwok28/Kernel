@@ -7,9 +7,19 @@ type Props = {
     id: string;
     children: React.ReactNode;
     enabled: boolean;
+    deleteMode?: boolean;
+    checked?: boolean;
+    onToggleCheck?: () => void;
 }
 
-const SortableBlock = ({ id, children, enabled }: Props ) => {
+const SortableBlock = ({ 
+    id, 
+    children, 
+    enabled, 
+    deleteMode, 
+    checked, 
+    onToggleCheck 
+}: Props ) => {
 
     const { 
         attributes, 
@@ -38,7 +48,7 @@ const SortableBlock = ({ id, children, enabled }: Props ) => {
             style={style}
             className={`
                 relative 
-                ${enabled ? "pl-6" : ""}
+                ${enabled || deleteMode ? "pl-6" : ""}
                 transition-[padding] duration-150
             `}
         >
@@ -63,7 +73,25 @@ const SortableBlock = ({ id, children, enabled }: Props ) => {
                 </div>
             )}
 
-            {children}
+            {deleteMode && (
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={onToggleCheck}
+                    className="
+                        absolute
+                        left-2
+                        top-1/2
+                        -translate-y-1/2
+                        z-20
+                    "
+                    onClick={(e) => e.stopPropagation()} 
+                />
+            )}
+
+            <div className="flex-1">
+                {children}
+            </div>
         </div>
   );
 }

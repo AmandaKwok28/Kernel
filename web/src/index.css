@@ -10,6 +10,9 @@ body,
   overscroll-behavior: none;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
 
 @custom-variant dark (&:is(.dark *));
 

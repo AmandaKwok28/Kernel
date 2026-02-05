@@ -5,10 +5,8 @@ import { useStore } from "@nanostores/react";
 import type { FileType } from "@/data/types";
 import Editor from "@/components/note/editor";
 import { useFiles } from "@/mutations/files";
-
-// #434744
-// #1e1e1d
-// #058ff9
+import { $fontFamily, $fontSize, $theme, setTheme } from "@/lib/themes";
+import { Switch } from "@/components/ui/switch";
 
 type MenuType = {
     x: number;
@@ -22,6 +20,9 @@ const Home = () => {
     // stored data
     const files = useStore($files);
     const dirty = useStore($dirty);
+    const fontSize = useStore($fontSize);
+    const fontFamily = useStore($fontFamily);
+    const theme = useStore($theme);
 
     // mutations
     const { makeFile, editFile, removeFile } = useFiles();
@@ -34,6 +35,12 @@ const Home = () => {
     const [menu, setMenu] = useState<MenuType | null>(null);
     const [editFileId, setEditFileId] = useState<number | null>(null);
     const [newName, setNewName] = useState<string>("");
+
+    // style
+    const textStyle = {
+        fontSize,
+        fontFamily
+    }
 
     useEffect(() => {
         const close = () => setMenu(null);
@@ -118,30 +125,55 @@ const Home = () => {
 
 
     const blocks = selectedFile ? selectedFile.blocks : [];
-    // #252524
+  
     return (
         <div className="flex flex-col h-screen overflow-hidden">
-            <div id='header' className="flex min-w-screen h-[25px] bg-[#494c4a] "> 
+            <div 
+                id='header' 
+                className="flex min-w-screen h-[25px] bg-[var(--bg-header)] items-center justify-between px-2" 
+                style={{ 
+                    border: theme === "dark" ? "" : "1px solid",
+                    borderColor: theme === "dark" ? "" : "var(--border)"
+                }}
+            > 
+                <div />  
+                <div title='theme toggle'>
+                    <Switch 
+                        size="sm" 
+                        className="cursor-pointer"
+                        onClick={() => {
+                            setTheme(theme === "dark" ? "light" : "dark");
+                        }}
+                    />
+                </div>
             </div>
 
             <div id="main-body" className="flex flex-row flex-1 w-full overflow-hidden">
                 <div 
                     id='sidebar' 
-                    className="flex flex-col items-center w-[40px] bg-[#323532] h-full p-4 gap-4"
+                    className="flex flex-col items-center w-[35px] bg-[var(--bg-sidebar)] h-full p-4 gap-4"
+                    style={{
+                        borderTop: "none",
+                        borderLeft: theme === "dark" ? "none" : "1px solid var(--border)",
+                        borderRight: theme === "dark" ? "none" : "1px solid var(--border)",
+                        borderBottom: theme === "dark" ? "none" : "1px solid var(--border)",
+                    }}
                 >
-                    <div className="text-gray-400 hover:text-white cursor-pointer" onClick={() => setOpen(!open)}> 
-                        <File /> 
+                    <div className="text-[var(--icon-color)] hover:text-[var(--hover-note-icon)] cursor-pointer" onClick={() => setOpen(!open)}> 
+                        <File strokeWidth="1.5px" size="20px"/> 
                     </div>
-                    <div className="text-gray-400 hover:text-white cursor-pointer"> <Search /> </div>
+                    <div className="text-[var(--icon-color)] hover:text-[var(--hover-note-icon)] cursor-pointer"> 
+                        <Search strokeWidth="1.5px" size="20px"/> 
+                    </div>
                 </div>
                 {open && (
-                    <div className="flex flex-col h-full w-[300px] bg-[#242424] gap-1">
-                        <div className="flex flex-row w-full text-gray-300 justify-end gap-2 p-4">
-                            <div className="text-gray-300 hover:text-white cursor-pointer">
-                                <FilePlusCorner size="18px" onClick={handleNewFile}/>
+                    <div className="flex flex-col h-full w-[300px] bg-[var(--bg-open-sidebar)] gap-1">
+                        <div className="flex flex-row w-full justify-end gap-2 p-4">
+                            <div className="text-gray-300 hover:text-[var(--hover-note-icon)] cursor-pointer">
+                                <FilePlusCorner strokeWidth="1.5px" size="18px" onClick={handleNewFile}/>
                             </div>
-                            <div className="text-gray-300 hover:text-white cursor-pointer">
-                                <FolderPlus size="18px"/>
+                            <div className="text-gray-300 hover:text-[var(--hover-note-icon)] cursor-pointer">
+                                <FolderPlus strokeWidth="1.5px" size="18px"/>
                             </div>
                         </div>
 
@@ -152,10 +184,10 @@ const Home = () => {
                                     key={file.id} 
                                     className={`
                                         flex items-center gap-2 text-gray-300 text-[12px]
-                                        cursor-pointer px-2 py-[3px] mx-2 rounded-md
+                                        cursor-pointer px-2 py-[3px] mx-2 rounded-[4px]
                                         ${selectedFileId === file.id
-                                        ? "bg-[#3b3e3c]"
-                                        : "hover:bg-[#3b3e3c]"}
+                                        ? "bg-[var(--bg-select-note)]"
+                                        : "hover:bg-[var(--bg-hover-note)]"}
                                     `}
                                     onClick={() => selectFile(file)}
                                     onContextMenu={(e) => {
@@ -163,7 +195,7 @@ const Home = () => {
                                         onRightClick(e, file.id)
                                     }}
                                 >
-                                    <Info size="13px" className="shrink-0" color="#058ff9"/> 
+                                    <Info size="13px" className="shrink-0" color="var(--note-icon-color)"/> 
                                     {editFileId === file.id ? (
                                         <input 
                                             autoFocus
@@ -179,17 +211,22 @@ const Home = () => {
                                             }
                                             }}
                                             className="
-                                            bg-transparent
-                                            text-gray-100
-                                            text-[11px]
-                                            outline-none
-                                            border-b
-                                            border-blue-400
-                                            w-full
+                                                bg-transparent
+                                                text-[var(--font-color)]
+                                                outline-none
+                                                border-b
+                                                border-blue-400
+                                                w-full
                                             "
+                                            style={textStyle}
                                         />
                                     ) : (
-                                        <span className="truncate text-[11px]">{file.name}</span>
+                                        <span 
+                                            className="truncate text-[var(--font-color)]"
+                                            style={textStyle}
+                                        >
+                                            {file.name}
+                                        </span>
                                     )}
 
                                     {dirty.fileId === file.id && dirty.isDirty && (
@@ -200,8 +237,8 @@ const Home = () => {
                         })}
 
                         {createNewFile && (
-                            <div className="flex items-center gap-1 mx-2 p-1 rounded-md bg-[#3b3e3c]">
-                                <TextAlignStart className="text-gray-400 w-4 h-4 shrink-0" />
+                            <div className="flex items-center gap-1 mx-2 p-1 rounded-md bg-[var(--bg-select-note)]">
+                                <TextAlignStart className="text-[var(--font-color)] w-4 h-4 shrink-0" />
 
                                 <input
                                     type="text"
@@ -209,8 +246,7 @@ const Home = () => {
                                     placeholder="New file name"
                                     className="
                                         bg-transparent
-                                        text-gray-100
-                                        text-[11px]
+                                        text-[var(--font-color)]
                                         outline-none
                                         border-b
                                         border-gray-500
@@ -222,17 +258,25 @@ const Home = () => {
                                         setFilename(e.target.value)
                                     }}
                                     onKeyDown={handleSubmit}
+                                    style={textStyle}
                                 />
                             </div>
                         )}
                     </div>
                 )}
-                <div id="main-content" className="flex flex-col w-full h-full bg-[#1d1d1d] items-center justify-center">
-                    {!selectedFile && <div className="text-[#252524] flex flex-col gap-4 items-center">
-                        <FilePlusCorner size="200px"/>
-                        <div className="text-[#8c948f] text-sm"> No notes selected </div>
+                <div id="main-content" className="flex flex-col w-full h-full bg-[var(--bg-main)] items-center justify-center">
+                    {!selectedFile && <div className="flex flex-col gap-4 items-center text-[var(--file-plus-color)]">
+                        <FilePlusCorner strokeWidth="1px" size="200px"/>
+                        <div className="text-[var(--bg-font-color)] text-[12px]" style={{fontFamily: "monospace"}}> No notes selected </div>
                     </div>}
-                    {selectedFile && <Editor fileId={selectedFile.id} fileName={selectedFile.name} blocks={blocks}/>}
+                    {selectedFile && (
+                        <Editor 
+                            key={selectedFile.id}
+                            fileId={selectedFile.id} 
+                            fileName={selectedFile.name} 
+                            blocks={blocks}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -246,6 +290,8 @@ const Home = () => {
                     style={{
                         top: menu.y,
                         left: menu.x,
+                        fontFamily: "monospace",
+                        fontSize: fontSize
                     }}
                 >
                     <button 

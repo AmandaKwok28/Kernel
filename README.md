@@ -9,7 +9,9 @@
 
 **Kernel** is a desktop notebook application that combines markdown-based note-taking with executable code blocks, designed for technical thinking, experimentation, and iterative work.
 
-![Kernel demo](assets/app-image.png)
+<p align="center">
+  <img src="web/assets/app-image.png" width="800" />
+</p>
 
 It sits somewhere between **Jupyter**, **Obsidian**, and **VS Code**—but optimized for local, reproducible execution and structured technical notes rather than documents or blogs.
 

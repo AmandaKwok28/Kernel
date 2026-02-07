@@ -89,45 +89,5 @@ Current focus areas:
 
 This is not yet a packaged, end-user product—it’s a systems-oriented project exploring better tooling for technical work.
 
----
 
-## Non-Goals (For Now)
-
-Kernel is **not currently trying to be**:
-- A cloud notebook platform
-- A collaborative editor
-- A replacement for full IDEs
-- A publishing tool
-
-These tradeoffs are intentional.
-
----
-
-## Motivation
-
-Kernel grew out of frustration with existing tools when working on:
-- Machine learning experiments
-- Technical notes tightly coupled with code
-- Research-style workflows where clarity and reproducibility matter
-
-The goal is not to do *everything*, but to do one workflow extremely well.
-
----
-
-## Roadmap
-
-- [ ] Robust execution lifecycle management  
-- [ ] Improved error surfacing and debugging output  
-- [ ] Block reordering and richer interactions  
-- [ ] Stronger persistence and project structure  
-- [ ] Desktop packaging and distribution  
-
----
-
-## Tech Stack
-
-- Electron  
-- React  
-- TypeScript  
-- Python  
 

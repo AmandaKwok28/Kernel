@@ -39,6 +39,8 @@ $theme.subscribe((theme) => {
         root.style.setProperty("--number-highlight", "#68a7ef");
         root.style.setProperty("--dash-highlight", "#247afc");
         root.style.setProperty("--bg-code", "#151417");
+        root.style.setProperty("--controls-select-color", "#ffffff");
+        root.style.setProperty("--dirty-color", "#5fa2ee");
     } else {
         root.style.setProperty("--bg-main", "#ffffff");   
         root.style.setProperty("--bg-header", "#f4f0f0");      
@@ -62,6 +64,7 @@ $theme.subscribe((theme) => {
         root.style.setProperty("--number-highlight", "#d37fe6");
         root.style.setProperty("--dash-highlight", "#b969cb");
         root.style.setProperty("--bg-code", "#1e1e1e");
-
+        root.style.setProperty("--controls-select-color", "#bb9df7");
+        root.style.setProperty("--dirty-color", "#cc8ad3");
     };
 })

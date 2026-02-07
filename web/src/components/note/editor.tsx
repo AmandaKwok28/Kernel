@@ -136,7 +136,7 @@ const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
                     </div>
                     <div
                         className={`cursor-pointer bg-[var(--bg-note-icon)] p-1 rounded-sm ${
-                            deleteMode ? "text-white" : "text-gray-500 hover:text-[var(--hover-note-icon)] "
+                            deleteMode ? "text-[var(--controls-select-color)]" : "text-gray-500 hover:text-[var(--hover-note-icon)] "
                         }`}
                         title="delete mode: select blocks to delete"
                         onClick={() => {
@@ -163,7 +163,7 @@ const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
                     </div>
                     <div
                         className={`cursor-pointer bg-[var(--bg-note-icon)] p-1 rounded-sm ${
-                            editMode ? "text-white" : "text-gray-500 hover:text-[var(--hover-note-icon)] "
+                            editMode ? "text-[var(--controls-select-color)]" : "text-gray-500 hover:text-[var(--hover-note-icon)] "
                         }`}
                         title="edit mode: reorder blocks"
                         onClick={() => {

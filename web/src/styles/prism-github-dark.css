@@ -14,7 +14,6 @@ pre[class*="language-"] {
 .token.doctype,
 .token.cdata {
   color: #8b949e;
-  font-style: italic;
 }
 
 /* Keywords */

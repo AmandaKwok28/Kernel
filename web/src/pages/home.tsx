@@ -230,7 +230,7 @@ const Home = () => {
                                     )}
 
                                     {dirty.fileId === file.id && dirty.isDirty && (
-                                        <div className="w-2 h-2 bg-blue-400 rounded-full ml-auto mr-2"></div>
+                                        <div className="w-2 h-2 bg-[var(--dirty-color)] rounded-full ml-auto mr-2"></div>
                                     )}
                                 </div>
                             )

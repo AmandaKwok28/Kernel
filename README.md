@@ -137,8 +137,13 @@ Current focus areas:
 - Improving block-level UX (editing, running, re-running)
 - Making output rendering predictable and debuggable
 - Refining the desktop experience (layout, performance, polish)
+  - Allowing folder creation
+  - Allow folder / file dragging
+  - Allow multiselect for files like in VsCode
 
-This is not yet a packaged, end-user product—it’s a systems-oriented project exploring better tooling for technical work.
+This is not yet a packaged, end-user product—it’s a systems-oriented project to learn the basics behind 
+what goes into an editor. Also, having a customizable note taking application is nice because notion's 
+code block color theme is terrible. 
 
 
 

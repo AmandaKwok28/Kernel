@@ -84,7 +84,7 @@ fileRouter.delete(
             return res.sendStatus(404);
         }
 
-        res.status(204).json({
+        res.status(200).json({
             data: [],
             message: "ok"
         })

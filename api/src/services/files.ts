@@ -27,13 +27,17 @@ export const Files = {
     },
 
     // create a new file
-    create(name: string, content: string = ""): FileType {
+    create(
+        name: string, 
+        content: string = "",
+        folder_id: number | null = null
+    ): FileType {
         const result = db
-            .prepare<[string, string], never>(`
-                INSERT INTO files (name, content)
-                VALUES (?, ?)
+            .prepare<[string, string, number | null], never>(`
+                INSERT INTO files (name, content, folder_id)
+                VALUES (?, ?, ?)
             `)
-            .run(name, content);
+            .run(name, content, folder_id);
 
         const file = this.getById(result.lastInsertRowid as number);
 
@@ -45,7 +49,12 @@ export const Files = {
     },
 
     // update content
-    update(id: number, name?: string, content?: string): FileType | null{
+    update(
+        id: number, 
+        name?: string, 
+        content?: string,
+        folder_id?: number | null
+    ): FileType | null{
         const fields: string[] = [];
         const values: any[] = [];
 
@@ -57,6 +66,11 @@ export const Files = {
         if (content !== undefined) {
             fields.push("content = ?");
             values.push(content);
+        }
+
+        if (folder_id !== undefined) {
+            fields.push("folder_id = ?");
+            values.push(folder_id);
         }
 
         if (fields.length === 0) {

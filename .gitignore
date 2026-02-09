@@ -1,1 +1,14 @@
 node_modules/
+
+# SQLite databases (anywhere)
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# SQLite temp files
+**/*.db-shm
+**/*.db-wal
+
+# Env files
+**/*.env
+!**/*.env.example

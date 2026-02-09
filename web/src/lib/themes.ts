@@ -41,6 +41,7 @@ $theme.subscribe((theme) => {
         root.style.setProperty("--bg-code", "#151417");
         root.style.setProperty("--controls-select-color", "#ffffff");
         root.style.setProperty("--dirty-color", "#5fa2ee");
+        root.style.setProperty("--caret-color", "#E5E7EB");
     } else {
         root.style.setProperty("--bg-main", "#ffffff");   
         root.style.setProperty("--bg-header", "#f4f0f0");      
@@ -66,5 +67,6 @@ $theme.subscribe((theme) => {
         root.style.setProperty("--bg-code", "#1e1e1e");
         root.style.setProperty("--controls-select-color", "#bb9df7");
         root.style.setProperty("--dirty-color", "#cc8ad3");
+        root.style.setProperty("--caret-color", "#3c1c3b");
     };
 })

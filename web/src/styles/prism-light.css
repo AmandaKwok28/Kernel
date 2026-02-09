@@ -1,0 +1,101 @@
+/* prism-vscode-dark-plus.css
+   Matches VS Code Dark+ default theme
+*/
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: #d4d4d4;  /* editor foreground */
+	background: transparent;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+/* Comments */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: #6a9955;  /* green comments */
+}
+
+/* Keywords */
+.token.keyword,
+.token.selector,
+.token.atrule,
+.token.important {
+	color: #7abcf3;  /* blue keyword */
+}
+
+/* Strings */
+.token.string,
+.token.char,
+.token.attr-value,
+.token.inserted {
+	color: #ce9178;  /* orange string */
+}
+
+/* Numbers & constants */
+.token.number,
+.token.boolean,
+.token.constant,
+.token.symbol {
+	color: #b5cea8;  /* light green numbers */
+}
+
+/* Functions */
+.token.function {
+	color: #dcdcaa;  /* yellow function */
+}
+
+/* Variables & properties */
+.token.variable,
+.token.property {
+	color: #9cdcfe;  /* light blue variable */
+}
+
+/* Operators */
+.token.operator {
+	color: #d4d4d4;
+}
+
+/* Punctuation */
+.token.punctuation {
+	color: #d4d4d4;
+}
+
+/* Classes & types */
+.token.class-name,
+.token.type,
+.token.builtin {
+	color: #4ec9b0;  /* teal type */
+}
+
+/* Attributes */
+.token.attr-name {
+	color: #9cdcfe;
+}
+
+/* Tags (HTML/XML) */
+.token.tag {
+	color: #569cd6;
+}
+
+/* Regex */
+.token.regex {
+	color: #d16969;
+}
+
+/* Deleted text */
+.token.deleted {
+	color: #f44747;
+}
+
+/* Namespace */
+.token.namespace {
+	opacity: 0.7;
+}
+
+/* Emphasis */
+.token.important { font-weight: bold; }
+.token.bold { font-weight: bold; }
+.token.italic { font-style: italic; }

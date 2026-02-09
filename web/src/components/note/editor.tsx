@@ -12,9 +12,27 @@ type Props = {
     fileId: number;
     fileName: string;
     blocks: BlockType[];
+    editFileId: number | null;
+    newName: string;
+    setNewName: (v: string) => void;
+    startRename: () => void;
+    commitRename: (fileId: number) => void;
+    cancelRename: () => void;
+    renameSource: string | null;
 }
 
-const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
+const Editor = ({ 
+    fileId, 
+    fileName, 
+    blocks: initialBlocks, 
+    editFileId,
+    newName,
+    setNewName,
+    startRename,
+    commitRename,
+    cancelRename,
+    renameSource
+} : Props ) => {
 
     const [blocks, setBlocks] = useState<BlockType[]>(initialBlocks);
     const [editMode, setEditMode] = useState<boolean>(false);
@@ -79,19 +97,48 @@ const Editor = ({ fileId, fileName, blocks: initialBlocks } : Props ) => {
     return (
         <div className="w-full h-full flex flex-col bg-[var(--bg-main)] p-4 overflow-x-hidden overflow-y-auto overscroll-none relative">
             <div className="w-full flex flex-row gap-8 mb-4 sticky top-0 z-20">
-                <div 
-                    id='note-title' 
+                <div
                     className="
-                        bg-[var(--bg-note-title)] 
-                        w-fit 
-                        px-4 
-                        rounded-sm 
-                        text-[25px] 
+                        bg-[var(--bg-note-title)]
+                        w-fit
+                        px-4
+                        rounded-sm
+                        text-[25px]
                         text-[var(--note-title-color)]
-                    " 
-                    style={{ fontFamily: "monospace"}}
+                    "
+                    style={{ fontFamily: "monospace" }}
                 >
-                    {fileName}
+                    {editFileId === fileId && renameSource === "editor" ? (
+                        <input
+                            autoFocus
+                            value={newName}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => setNewName(e.target.value)}
+                            onBlur={() => commitRename(fileId)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") commitRename(fileId);
+                                if (e.key === "Escape") cancelRename();
+                            }}
+                            className="
+                                bg-transparent
+                                outline-none
+                                border-b
+                                border-blue-400
+                                text-[25px]
+                                text-[var(--note-title-color)]
+                                w-full
+                            "
+                            style={{ fontFamily: "monospace" }}
+                        />
+                    ) : (
+                        <span
+                            className="cursor-text"
+                            onClick={startRename}
+                            title="Double-click to rename"
+                        >
+                            {fileName}
+                        </span>
+                    )}
                 </div>
                 <div className="flex flex-row gap-2 h-full items-center">
                     <div 

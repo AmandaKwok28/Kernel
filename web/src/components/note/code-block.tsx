@@ -6,7 +6,7 @@ import "@/styles/prism-github-dark.css";
 import { Copy, Play, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useStore } from "@nanostores/react";
-import { $fontSize } from "@/lib/themes";
+import { $fontSize, $theme } from "@/lib/themes";
 
 
 type CodeBlockType = Extract<BlockType, { type: "code" }>;
@@ -34,6 +34,24 @@ const CodeBlock = ({ block, onUpdate }: Props) => {
 
     // store
     const fontSize = useStore($fontSize);
+    const theme = useStore($theme);
+
+    useEffect(() => {
+    const id = "prism-theme";
+    const prev = document.getElementById(id);
+    if (prev) prev.remove();
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.id = id;
+    link.href =
+        theme === "dark"
+        ? new URL("../../styles/prism-github-dark.css", import.meta.url).href
+        : new URL("../../styles/prism-light.css", import.meta.url).href;
+
+    document.head.appendChild(link);
+    return () => link.remove();
+    }, [theme]);
 
     // styling
     const textStyle = {

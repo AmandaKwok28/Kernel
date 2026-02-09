@@ -35,6 +35,8 @@ const Home = () => {
     const [menu, setMenu] = useState<MenuType | null>(null);
     const [editFileId, setEditFileId] = useState<number | null>(null);
     const [newName, setNewName] = useState<string>("");
+    const [renameSource, setRenameSource] = useState<"sidebar" | "editor" | null>(null);
+
 
     // style
     const textStyle = {
@@ -43,7 +45,9 @@ const Home = () => {
     }
 
     useEffect(() => {
-        const close = () => setMenu(null);
+        const close = () => {
+            if (menu) setMenu(null);
+        };
         window.addEventListener("click", close);
         return () => window.removeEventListener("click", close);
     }, []);
@@ -97,10 +101,12 @@ const Home = () => {
         const file = files.find((f) => f.id === menu.fileId);
         if (!file) return;
 
+        setRenameSource("sidebar");
         setEditFileId(file.id);
         setNewName(file.name);
         setMenu(null);
-    }
+    };
+
 
     const handleDelete = async () => {
         if (menu?.fileId == null) return;
@@ -120,11 +126,13 @@ const Home = () => {
             console.log("Failed to rename file", err)
         } finally {
             setEditFileId(null);
+            setRenameSource(null);
         }
     }
 
 
     const blocks = selectedFile ? selectedFile.blocks : [];
+    
   
     return (
         <div className="flex flex-col h-screen overflow-hidden">
@@ -141,8 +149,9 @@ const Home = () => {
                     <Switch 
                         size="sm" 
                         className="cursor-pointer"
-                        onClick={() => {
+                        onClick={(e) => {
                             setTheme(theme === "dark" ? "light" : "dark");
+                            e.stopPropagation();
                         }}
                     />
                 </div>
@@ -179,6 +188,8 @@ const Home = () => {
 
                         {/* store the files and eventually folders */}
                         {files.map((file) => {
+                            const isRenaming = editFileId === file.id && renameSource === "sidebar";
+
                             return (
                                 <div 
                                     key={file.id} 
@@ -196,7 +207,7 @@ const Home = () => {
                                     }}
                                 >
                                     <Info size="13px" className="shrink-0" color="var(--note-icon-color)"/> 
-                                    {editFileId === file.id ? (
+                                    {isRenaming ? (
                                         <input 
                                             autoFocus
                                             value={newName}
@@ -275,6 +286,17 @@ const Home = () => {
                             fileId={selectedFile.id} 
                             fileName={selectedFile.name} 
                             blocks={blocks}
+                            editFileId={editFileId}
+                            newName={newName}
+                            setNewName={setNewName}
+                            startRename={() => {
+                                setRenameSource("editor");
+                                setEditFileId(selectedFile.id);
+                                setNewName(selectedFile.name);
+                            }}
+                            commitRename={commitRename}
+                            cancelRename={() => setEditFileId(null)}
+                            renameSource={renameSource}
                         />
                     )}
                 </div>

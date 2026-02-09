@@ -171,7 +171,7 @@ const TextBlock = ({ block, onUpdate } : Props) => {
                     resize-none
                     outline-none
                     text-transparent
-                    caret-gray-200
+                    caret-[var(--caret-color)]
                     px-4
                     "
                 style={textStyle}

@@ -2,12 +2,7 @@ export type FileType = {
     id: number;
     name: string;
     blocks: BlockType[];
-}
-
-export type FolderType = {
-    id: number;
-    name: string;
-    files: FileType[];
+    folder_id: number | null;
 }
 
 export type DirtyType = {
@@ -30,4 +25,9 @@ export type BlockType = {
 export type ApiResponse<T> = {
     data: T;
     message: any;
+}
+
+export type FolderType = {
+    id: number;
+    name: string;
 }

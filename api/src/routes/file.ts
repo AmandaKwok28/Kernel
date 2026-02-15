@@ -39,8 +39,8 @@ fileRouter.post(
     validateBody(createFileBody), 
     (req, res) => {
 
-    const { name, content } = req.body;
-    const file = Files.create(name, content);
+    const { name, content, folder_id } = req.body;
+    const file = Files.create(name, content, folder_id);
 
     res.status(201).json({
         data: file,
@@ -56,9 +56,9 @@ fileRouter.patch(
   validateBody(updateFileBody),
   (req, res) => {
     const id = Number(req.params.id);
-    const { name, content } = req.body;
+    const { name, content, folder_id } = req.body;
 
-    const updated = Files.update(id, name, content);
+    const updated = Files.update(id, name, content, folder_id);
 
     if (!updated) {
       return res.sendStatus(404);

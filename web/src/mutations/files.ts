@@ -1,4 +1,4 @@
-import { createFile, deleteFile, fetchFiles, updateFile } from "@/data/api"
+import { createFile, deleteFile, fetchFiles, updateFile } from "@/data/files"
 import type { BlockType } from "@/data/types";
 import { $files, addFile, addUpdatedFile, removeStoreFile, setFiles } from "@/lib/store";
 import { useStore } from "@nanostores/react";
@@ -12,8 +12,8 @@ export const useFiles = () => {
 
     const getFiles = async () => {
         try {
-            const files = await fetchFiles();
-            setFiles(files);
+            const data = await fetchFiles();
+            setFiles(data);
         } catch (err) {
             console.log(err);
         } 

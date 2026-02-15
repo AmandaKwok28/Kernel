@@ -11,5 +11,8 @@ contextBridge.exposeInMainWorld("kernel", {
 contextBridge.exposeInMainWorld("app", {
   onSave: (callback) => {
     ipcRenderer.on("app:save", callback);
+    return () => {
+      ipcRenderer.removeListener("app:save", callback);
+    };
   },
 });

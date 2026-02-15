@@ -1,0 +1,1 @@
+ALTER TABLE files ADD COLUMN folder_id INTEGER NULL;

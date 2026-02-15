@@ -12,32 +12,21 @@ type Props = {
     fileId: number;
     fileName: string;
     blocks: BlockType[];
-    editFileId: number | null;
-    newName: string;
-    setNewName: (v: string) => void;
-    startRename: () => void;
-    commitRename: (fileId: number) => void;
-    cancelRename: () => void;
-    renameSource: string | null;
 }
 
 const Editor = ({ 
     fileId, 
     fileName, 
     blocks: initialBlocks, 
-    editFileId,
-    newName,
-    setNewName,
-    startRename,
-    commitRename,
-    cancelRename,
-    renameSource
 } : Props ) => {
 
     const [blocks, setBlocks] = useState<BlockType[]>(initialBlocks);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [deleteMode, setDeleteMode] = useState<boolean>(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());  // set for O(1) ops plus no dupe ids
+    const [isRenaming, setIsRenaming] = useState(false);
+    const [nameInput, setNameInput] = useState(fileName);
+
     
     // mutations
     const { editFile } = useFiles();
@@ -55,6 +44,11 @@ const Editor = ({
         setEditMode(false);
         setDeleteMode(false);
     }, [fileId]);
+
+    useEffect(() => {
+        setIsRenaming(false);
+        setNameInput(fileName);
+    }, [fileId, fileName]);
 
 
     useEffect(() => {
@@ -94,6 +88,18 @@ const Editor = ({
         setDirtyState({ fileId, isDirty: true});
     }
 
+    const commitRename = async () => {
+        const trimmed = nameInput.trim();
+        if (!trimmed) {
+            setIsRenaming(false);
+            return;
+        }
+
+        await editFile(fileId, trimmed);
+        setIsRenaming(false);
+    };
+
+
     return (
         <div className="w-full h-full flex flex-col bg-[var(--bg-main)] p-4 overflow-x-hidden overflow-y-auto overscroll-none relative">
             <div className="w-full flex flex-row gap-8 mb-4 sticky top-0 z-20">
@@ -108,16 +114,19 @@ const Editor = ({
                     "
                     style={{ fontFamily: "monospace" }}
                 >
-                    {editFileId === fileId && renameSource === "editor" ? (
+                    {isRenaming ? (
                         <input
                             autoFocus
-                            value={newName}
+                            value={nameInput}
                             onClick={(e) => e.stopPropagation()}
-                            onChange={(e) => setNewName(e.target.value)}
-                            onBlur={() => commitRename(fileId)}
+                            onChange={(e) => setNameInput(e.target.value)}
+                            onBlur={commitRename}
                             onKeyDown={(e) => {
-                                if (e.key === "Enter") commitRename(fileId);
-                                if (e.key === "Escape") cancelRename();
+                                if (e.key === "Enter") commitRename();
+                                if (e.key === "Escape") {
+                                    setIsRenaming(false);
+                                    setNameInput(fileName);
+                                }
                             }}
                             className="
                                 bg-transparent
@@ -133,7 +142,7 @@ const Editor = ({
                     ) : (
                         <span
                             className="cursor-text"
-                            onClick={startRename}
+                            onClick={() => setIsRenaming(true)}
                             title="Double-click to rename"
                         >
                             {fileName}

@@ -1,4 +1,4 @@
-import type { BlockType, DirtyType, FileType } from "@/data/types";
+import type { BlockType, DirtyType, FileType, FolderType } from "@/data/types";
 import { persistentAtom } from "@nanostores/persistent";
 import { atom } from "nanostores";
 
@@ -59,5 +59,44 @@ export function addUpdatedFile(updated: FileType) {
 export function removeStoreFile(id: number) {
   $files.set(
     $files.get().filter((f) => f.id !== id)
+  )
+}
+
+
+//---------------------------------------------------------------------
+// folders
+//---------------------------------------------------------------------
+export const $folders = persistentAtom<FolderType[]>(
+  "folders",        // localStorage key
+  [],               // default value
+  {
+    encode: JSON.stringify,
+    decode: JSON.parse,
+  }
+);
+
+// functions to set folders
+export function setFolders(folders: FolderType[]) {
+  $folders.set(folders);
+}
+
+// function to add a new folder
+export function addFolder(folder: FolderType) {
+  $folders.set([...$folders.get(), folder]);
+}
+
+// function to update a folder
+export function addUpdatedFolder(updated: FolderType) {
+  $folders.set(
+    $folders.get().map((folder) => {
+      return folder.id === updated.id ? updated : folder
+    })
+  )
+}
+
+// function to delete a folder
+export function removeStoreFolder(id: number) {
+  $folders.set(
+    $folders.get().filter((f) => f.id !== id)
   )
 }

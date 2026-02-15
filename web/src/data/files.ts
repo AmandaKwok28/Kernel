@@ -12,7 +12,8 @@ export async function fetchFiles(): Promise<FileType[]> {
     return json.data.map((file) => ({
         id: file.id,
         name: file.name,
-        blocks: JSON.parse(file.content ?? "[]")
+        blocks: JSON.parse(file.content ?? "[]"),
+        folder_id: file.folder_id,
     }));
 }
 
@@ -38,7 +39,8 @@ export async function createFile(
     return {
         id: json.data.id,
         name: json.data.name,
-        blocks: JSON.parse(json.data.content ?? "[]")
+        blocks: JSON.parse(json.data.content ?? "[]"),
+        folder_id: json.data.folder_id
     };
 }
 
@@ -73,7 +75,8 @@ export async function updateFile(
     return {
         id: json.data.id,
         name: json.data.name,
-        blocks: JSON.parse(json.data.content ?? "[]")
+        blocks: JSON.parse(json.data.content ?? "[]"),
+        folder_id: json.data.folder_id
     };
 }
 

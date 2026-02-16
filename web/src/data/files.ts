@@ -19,6 +19,7 @@ export async function fetchFiles(): Promise<FileType[]> {
 
 export async function createFile(
     name: string,
+    folder_id?: number
 ): Promise<FileType> {
     const res = await fetch(`${API_URL}/files`, {
         method: "POST",
@@ -27,6 +28,7 @@ export async function createFile(
         },
         body: JSON.stringify({
             name,
+            folder_id,
             content: JSON.stringify([]),
         })
     })

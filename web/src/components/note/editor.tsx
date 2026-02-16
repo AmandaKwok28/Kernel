@@ -57,8 +57,14 @@ const Editor = ({
             setDirtyState({ fileId, isDirty: false });
         };
 
-        window.app.onSave(handler);
-    }, [fileId]);
+        const unsubscribe = window.app.onSave(handler);
+
+        return () => {
+            unsubscribe();
+        };
+    }, [fileId, editFile]);
+
+
 
 
     const updateBlock = (index: number, updated: BlockType) => {

@@ -137,7 +137,6 @@ Current focus areas:
 - Improving block-level UX (editing, running, re-running)
 - Making output rendering predictable and debuggable
 - Refining the desktop experience (layout, performance, polish)
-  - Allowing folder creation
   - Allow folder / file dragging
   - Allow multiselect for files like in VsCode
 

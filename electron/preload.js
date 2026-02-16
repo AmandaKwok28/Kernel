@@ -1,7 +1,5 @@
-// electron/preload.js  (COMMONJS — IMPORTANT)
+// electron/preload.js
 const { contextBridge, ipcRenderer } = require("electron");
-
-console.log("PRELOAD LOADED");
 
 contextBridge.exposeInMainWorld("kernel", {
   run: (code) => ipcRenderer.invoke("py:run", { code }),
@@ -10,9 +8,11 @@ contextBridge.exposeInMainWorld("kernel", {
 
 contextBridge.exposeInMainWorld("app", {
   onSave: (callback) => {
-    ipcRenderer.on("app:save", callback);
+    const handler = () => callback();
+    ipcRenderer.on("app:save", handler);
+
     return () => {
-      ipcRenderer.removeListener("app:save", callback);
+      ipcRenderer.removeListener("app:save", handler);
     };
   },
 });

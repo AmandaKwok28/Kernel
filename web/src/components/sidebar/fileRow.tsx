@@ -1,5 +1,5 @@
 import type { FileType } from "@/data/types";
-import { Info } from "lucide-react";
+import { File } from "lucide-react";
 
 type Props = {
     file: FileType;
@@ -44,7 +44,7 @@ const FileRow = ({
             onClick={onClick}
             onContextMenu={onContextMenu}
         >
-            <Info size="13px" className="shrink-0" color="var(--note-icon-color)"/>
+            <File size="13px" className="shrink-0" color="var(--note-icon-color)"/>
 
             {isRenaming ? (
                 <input

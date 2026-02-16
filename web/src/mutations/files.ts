@@ -20,9 +20,9 @@ export const useFiles = () => {
     }
 
     // create files
-    const makeFile = async (name: string) => {
+    const makeFile = async (name: string, folder_id?: number) => {
         try {
-            const file = await createFile(name);
+            const file = await createFile(name, folder_id);
             addFile(file);
             return file;
         } catch (err) {

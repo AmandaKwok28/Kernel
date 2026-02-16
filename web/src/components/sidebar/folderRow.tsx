@@ -14,6 +14,8 @@ type Props = {
   onContextMenu: (e: React.MouseEvent) => void;
 
   textStyle: React.CSSProperties;
+  isSelected: boolean;
+  onSelect: () => void;
 };
 
 const FolderRow = ({
@@ -27,24 +29,34 @@ const FolderRow = ({
   onCancelRename,
   onContextMenu,
   textStyle,
+  isSelected,
+  onSelect,
 }: Props) => {
 
   
   return (
     <div
-      className="
+      className={`
         flex items-center gap-2 px-2 py-[3px] mx-2
         rounded-[4px]
+        cursor-pointer
         hover:bg-[var(--bg-hover-note)]
-      "
+        ${isSelected
+          ? "bg-[var(--bg-select-note)]"
+          : "hover:bg-[var(--bg-hover-note)]"
+        }
+      `}
       onContextMenu={onContextMenu}
       style={{ ...textStyle, color: "white" }}
+      onClick={() => {
+        onSelect();
+        onToggle();
+      }}
     >
       <ChevronRight
         size={12}
         className={`transition-transform cursor-pointer ${isOpen ? "rotate-90" : ""}`}
         color="var(--note-icon-color)"
-        onClick={onToggle}
       />
       {/* <Folder 
         size={12}
@@ -73,7 +85,6 @@ const FolderRow = ({
       ) : (
         <span
           className="truncate cursor-pointer text-[var(--font-color)]"
-          onClick={onToggle}
         >
           {name}
         </span>

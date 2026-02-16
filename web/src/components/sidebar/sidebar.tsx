@@ -19,7 +19,7 @@ type Props = {
     dirty: { fileId: number | null; isDirty: boolean };
     theme: string;
     textStyle: React.CSSProperties;
-    setSelectedFileId: (id: number) => void;
+    setSelectedFileId: (id: number | null) => void;
 
 };
 
@@ -45,6 +45,8 @@ const Sidebar = ({
     const [createNewFolder, setCreateNewFolder] = useState(false);
     const [filename, setFilename] = useState("");      
     const [foldername, setFoldername] = useState("");
+    const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+
 
     // mutations
     const { editFile, removeFile, makeFile } = useFiles();
@@ -117,6 +119,13 @@ const Sidebar = ({
     // file and folder creation handlers
     const handleNewFile = () => {
         setCreateNewFile(true);
+        if (selectedFolderId != null) {
+            setExpandedFolders(prev => {
+                const next = new Set(prev);
+                next.add(selectedFolderId);
+                return next;
+            })
+        }
     }
 
     const handleNewFolder = () => {
@@ -129,7 +138,7 @@ const Sidebar = ({
 
         setCreateNewFile(false);
 
-        const newFile = await makeFile(filename);
+        const newFile = await makeFile(filename, selectedFolderId ?? undefined);
         if (!newFile) {
             return;         // add an error later
         }
@@ -178,12 +187,37 @@ const Sidebar = ({
 
         {/* Expanded Sidebar */}
         {open && (
-            <div className="flex flex-col h-full w-[300px] bg-[var(--bg-open-sidebar)] gap-1">
+            <div className="flex flex-col h-full w-[300px] bg-[var(--bg-open-sidebar)] gap-1"
+                onClick={(e) => {
+                    if (e.target !== e.currentTarget) return;   // only trigger when clicking on empty space in sidebar, not on file/folder rows
+                    setMenu(null);                  // close menu on click anywhere in sidebar
+                    setSelectedFileId(null);        // also deselect any selected files / folders
+                    setSelectedFolderId(null);
+                }}   
+            >
 
                 <SidebarHeader 
                     handleNewFile={handleNewFile}
                     hanldeNewFolder={handleNewFolder}
                 />
+
+                {/* Create File Input */}
+                {selectedFolderId === null && createNewFile && (
+                    <div className="flex items-center gap-2 mx-2 px-2 py-1 rounded-[4px] bg-[var(--bg-select-note)]">
+                    <File size="13px" className="shrink-0 text-[var(--new-file-icon)]" />
+
+                    <input
+                        type="text"
+                        autoFocus
+                        placeholder="New file name"
+                        className="bg-transparent outline-none border-b w-full text-[var(--create-text-color)]"
+                        value={filename}
+                        onChange={(e) => setFilename(e.target.value)}
+                        onKeyDown={handleSubmitFile}
+                        style={textStyle}
+                    />
+                    </div>
+                )}
 
                 {/* Root Files */}
                 {rootFiles.map((file: FileType) => {
@@ -201,7 +235,10 @@ const Sidebar = ({
                         isDirty={dirty.fileId === file.id && dirty.isDirty}
                         newName={newName}
                         setNewName={setNewName}
-                        onClick={() => selectFile(file)}
+                        onClick={() => {
+                            selectFile(file)
+                            setSelectedFolderId(null);
+                        }}
                         onContextMenu={(e) => onRightClickLocal(e, { type: "file", id: file.id })}
                         onCommitRename={commitRename}
                         onCancelRename={cancelRename}
@@ -224,6 +261,8 @@ const Sidebar = ({
                         renameTarget?.type === "folder" &&
                         renameTarget.id === folder.id;
 
+                    const isSelected = selectedFolderId === folder.id;
+
                     return (
                         <FolderSection
                             key={folder.id}
@@ -243,32 +282,25 @@ const Sidebar = ({
                             textStyle={textStyle}
                             renameTarget={renameTarget}
                             isFolderRenaming={isFolderRenaming}
+                            onSelectFolder={() => {
+                                setSelectedFolderId(folder.id)
+                                setSelectedFileId(null);
+                            }}
+                            selectedFolderId={selectedFolderId}
+                            isSelected={isSelected}
+                            setSelectedFolderId={setSelectedFolderId}
+                            createNewFile={createNewFile}
+                            filename={filename}
+                            setFilename={setFilename}
+                            handleSubmitFile={handleSubmitFile}
                         />
                     );
                 })}
 
-                {/* Create File Input */}
-                {createNewFile && (
-                    <div className="flex items-center gap-1 mx-2 p-1 rounded-md bg-[var(--bg-select-note)]">
-                    <File className="w-4 h-4 shrink-0 text-[var(--new-file-icon)]" />
-
-                    <input
-                        type="text"
-                        autoFocus
-                        placeholder="New file name"
-                        className="bg-transparent outline-none border-b w-full text-[var(--create-text-color)]"
-                        value={filename}
-                        onChange={(e) => setFilename(e.target.value)}
-                        onKeyDown={handleSubmitFile}
-                        style={textStyle}
-                    />
-                    </div>
-                )}
-
                 {/* Create Folder Input */}
                 {createNewFolder && (
-                    <div className="flex items-center gap-1 mx-2 p-1 rounded-md bg-[var(--bg-select-note)]">
-                        <Folder className="w-4 h-4 shrink-0 text-[var(--new-folder-icon)]" />
+                    <div className="flex items-center gap-2 mx-2 py-1 px-2 rounded-[4px] bg-[var(--bg-select-note)]">
+                        <Folder size="13px" className="shrink-0 text-[var(--new-folder-icon)]" />
                         <input
                             type="text"
                             autoFocus

@@ -1,5 +1,3 @@
-import { $fontFamily, $fontSize } from "@/lib/themes";
-import { useStore } from "@nanostores/react";
 import { ChevronRight } from "lucide-react";
 
 type Props = {
@@ -7,30 +5,81 @@ type Props = {
   isOpen: boolean;
   onToggle: () => void;
   isDirty?: boolean;
+
+  isRenaming: boolean;
+  newName: string;
+  setNewName: (v: string) => void;
+  onCommitRename: () => void;
+  onCancelRename: () => void;
+  onContextMenu: (e: React.MouseEvent) => void;
+
+  textStyle: React.CSSProperties;
 };
 
-const FolderRow = ({ name, isOpen, onToggle }: Props) => {
+const FolderRow = ({
+  name,
+  isOpen,
+  onToggle,
+  isRenaming,
+  newName,
+  setNewName,
+  onCommitRename,
+  onCancelRename,
+  onContextMenu,
+  textStyle,
+}: Props) => {
 
-    const fontFamily = useStore($fontFamily);
-    const fontSize = useStore($fontSize);
-
-    return (
-      <div
+  
+  return (
+    <div
+      className="
+        flex items-center gap-2 px-2 py-[3px] mx-2
+        rounded-[4px]
+        hover:bg-[var(--bg-hover-note)]
+      "
+      onContextMenu={onContextMenu}
+      style={{ ...textStyle, color: "white" }}
+    >
+      <ChevronRight
+        size={12}
+        className={`transition-transform cursor-pointer ${isOpen ? "rotate-90" : ""}`}
+        color="var(--note-icon-color)"
         onClick={onToggle}
-        className="
-          flex items-center gap-2 px-2 py-[3px] mx-2
-          cursor-pointer rounded-[4px]
-          hover:bg-[var(--bg-hover-note)]
-        "
-        style={{ fontFamily: fontFamily, fontSize: fontSize, color: "white"}}
-      >
-        <ChevronRight
-          size={12}
-          className={`transition-transform ${isOpen ? "rotate-90" : ""}`}
+      />
+      {/* <Folder 
+        size={12}
+        color="var(--note-icon-color)"
+      /> */}
+
+      {isRenaming ? (
+        <input
+          autoFocus
+          value={newName}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => setNewName(e.target.value)}
+          onBlur={onCommitRename}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onCommitRename();
+            if (e.key === "Escape") onCancelRename();
+          }}
+          className="
+            bg-transparent
+            outline-none
+            border-b
+            border-blue-400
+            w-full
+          "
         />
-        <span className="truncate">{name}</span>
-      </div>
-    );
+      ) : (
+        <span
+          className="truncate cursor-pointer text-[var(--font-color)]"
+          onClick={onToggle}
+        >
+          {name}
+        </span>
+      )}
+    </div>
+  );
 };
 
 export default FolderRow;

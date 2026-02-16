@@ -6,7 +6,7 @@ type Props = {
     hanldeNewFolder: () => void,
 };
 
-const SidebarHeader = ({ handleNewFile } : Props) => {
+const SidebarHeader = ({ handleNewFile, hanldeNewFolder } : Props) => {
 
     const iconStyle = "cursor-pointer hover:text-[var(--hover-note-icon)] text-[var(--icon-color)]";
 
@@ -21,6 +21,7 @@ const SidebarHeader = ({ handleNewFile } : Props) => {
             <FolderPlus 
                 strokeWidth="1.5px" 
                 size="18px" 
+                onClick={hanldeNewFolder}
                 className={iconStyle}
             />
         </div>

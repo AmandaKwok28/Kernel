@@ -26,6 +26,9 @@ type Props = {
     cancelRename: () => void;
 
     textStyle: React.CSSProperties;
+
+    renameTarget: MenuTarget | null;   
+    isFolderRenaming: boolean;
 };
 
 const FolderSection = ({
@@ -43,7 +46,14 @@ const FolderSection = ({
   commitRename,
   cancelRename,
   textStyle,
+  renameTarget,
+  isFolderRenaming
 }: Props) => {
+
+  const isFileRenaming = (fileId: number) =>
+    renameTarget?.type === "file" &&
+    renameTarget.id === fileId;
+
   return (
     <div>
       <FolderRow
@@ -51,7 +61,17 @@ const FolderSection = ({
         isOpen={isOpen}
         onToggle={toggle}
         isDirty={folderIsDirty}
+        isRenaming={isFolderRenaming}
+        newName={newName}
+        setNewName={setNewName}
+        onCommitRename={commitRename}
+        onCancelRename={cancelRename}
+        onContextMenu={(e) =>
+          onRightClick(e, { type: "folder", id: folder.id })
+        }
+        textStyle={textStyle}
       />
+
 
       {isOpen && (
         <div className="ml-3">
@@ -60,7 +80,7 @@ const FolderSection = ({
               key={file.id}
               file={file}
               isSelected={selectedFileId === file.id}
-              isRenaming={false} // file rename handled by parent with renameTarget
+              isRenaming={isFileRenaming(file.id)} // file rename handled by parent with renameTarget
               isDirty={dirtyFileId === file.id}
               newName={newName}
               setNewName={setNewName}

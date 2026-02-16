@@ -1,4 +1,4 @@
-import { Search, TextAlignStart, File } from "lucide-react";
+import { Search, File, Folder } from "lucide-react";
 import FolderSection from "./folderSection";
 import type { FileType, FolderType } from "@/data/types";
 import FileRow from "./fileRow";
@@ -17,15 +17,9 @@ type Props = {
     selectFile: (file: FileType) => void;
 
     dirty: { fileId: number | null; isDirty: boolean };
-
-    createNewFile: boolean;
-    handleNewFile: () => void;
-    filename: string;
-    setFilename: (v: string) => void;
-    handleSubmit: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-
     theme: string;
     textStyle: React.CSSProperties;
+    setSelectedFileId: (id: number) => void;
 
 };
 
@@ -36,13 +30,9 @@ const Sidebar = ({
     selectedFileId,
     selectFile,
     dirty,
-    createNewFile,
-    handleNewFile,
-    filename,
-    setFilename,
-    handleSubmit,
     theme,
     textStyle,
+    setSelectedFileId
 }: Props) => {
 
     // state
@@ -51,10 +41,14 @@ const Sidebar = ({
     const [menu, setMenu] = useState<MenuType | null>(null);
     const [renameTarget, setRenameTarget] = useState<MenuTarget | null>(null);
     const [newName, setNewName] = useState("");
+    const [createNewFile, setCreateNewFile] = useState(false);                              // indicates user hit create file
+    const [createNewFolder, setCreateNewFolder] = useState(false);
+    const [filename, setFilename] = useState("");      
+    const [foldername, setFoldername] = useState("");
 
     // mutations
-    const { editFile, removeFile } = useFiles();
-    const { editFolder } = useFolders();
+    const { editFile, removeFile, makeFile } = useFiles();
+    const { editFolder, removeFolder, makeFolder } = useFolders();
 
     // use effect
     useEffect(() => {
@@ -115,17 +109,46 @@ const Sidebar = ({
         if (target.type === "file") {
             await removeFile(target.id);
         } else {
-            // later: removeFolder
-            console.log("TODO: delete folder", target.id);
+            await removeFolder(target.id);
         }
     };
 
 
+    // file and folder creation handlers
+    const handleNewFile = () => {
+        setCreateNewFile(true);
+    }
 
-
-    // Implement later
     const handleNewFolder = () => {
+        setCreateNewFolder(true);
+    }
 
+    const handleSubmitFile = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== "Enter") return;
+        if (!filename.trim()) return;
+
+        setCreateNewFile(false);
+
+        const newFile = await makeFile(filename);
+        if (!newFile) {
+            return;         // add an error later
+        }
+        setSelectedFileId(newFile.id);
+
+        setFilename("");
+    }
+
+    const handleSubmitFolder = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== "Enter") return;
+        if (!foldername.trim()) return;
+
+        setCreateNewFolder(false);
+
+        const newFolder = await makeFolder(foldername);
+        if (!newFolder) {
+            return;         
+        }
+        setFoldername("");   
     };
 
     const rootFiles = files.filter(f => f.folder_id == null);
@@ -197,6 +220,10 @@ const Sidebar = ({
                         (f: FileType) => dirty.fileId === f.id && dirty.isDirty
                     );
 
+                    const isFolderRenaming =
+                        renameTarget?.type === "folder" &&
+                        renameTarget.id === folder.id;
+
                     return (
                         <FolderSection
                             key={folder.id}
@@ -214,6 +241,8 @@ const Sidebar = ({
                             commitRename={commitRename}
                             cancelRename={cancelRename}
                             textStyle={textStyle}
+                            renameTarget={renameTarget}
+                            isFolderRenaming={isFolderRenaming}
                         />
                     );
                 })}
@@ -221,18 +250,35 @@ const Sidebar = ({
                 {/* Create File Input */}
                 {createNewFile && (
                     <div className="flex items-center gap-1 mx-2 p-1 rounded-md bg-[var(--bg-select-note)]">
-                    <TextAlignStart className="w-4 h-4 shrink-0" />
+                    <File className="w-4 h-4 shrink-0 text-[var(--new-file-icon)]" />
 
                     <input
                         type="text"
                         autoFocus
                         placeholder="New file name"
-                        className="bg-transparent outline-none border-b w-full"
+                        className="bg-transparent outline-none border-b w-full text-[var(--create-text-color)]"
                         value={filename}
                         onChange={(e) => setFilename(e.target.value)}
-                        onKeyDown={handleSubmit}
+                        onKeyDown={handleSubmitFile}
                         style={textStyle}
                     />
+                    </div>
+                )}
+
+                {/* Create Folder Input */}
+                {createNewFolder && (
+                    <div className="flex items-center gap-1 mx-2 p-1 rounded-md bg-[var(--bg-select-note)]">
+                        <Folder className="w-4 h-4 shrink-0 text-[var(--new-folder-icon)]" />
+                        <input
+                            type="text"
+                            autoFocus
+                            placeholder="New folder name"
+                            className="bg-transparent outline-none border-b w-full text-[var(--create-text-color)]"
+                            value={foldername}
+                            onChange={(e) => setFoldername(e.target.value)}   // change to folder name
+                            onKeyDown={handleSubmitFolder}  // change to folder stuff
+                            style={textStyle}
+                        />
                     </div>
                 )}
                 </div>

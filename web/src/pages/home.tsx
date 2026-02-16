@@ -4,7 +4,6 @@ import { $dirty, $files, $folders } from "@/lib/store";
 import { useStore } from "@nanostores/react";
 import type { FileType } from "@/data/types";
 import Editor from "@/components/note/editor";
-import { useFiles } from "@/mutations/files";
 import { $fontFamily, $fontSize, $theme, setTheme } from "@/lib/themes";
 import { Switch } from "@/components/ui/switch";
 import Sidebar from "@/components/sidebar/sidebar";
@@ -21,12 +20,8 @@ const Home = () => {
     const fontFamily = useStore($fontFamily);
     const theme = useStore($theme);                    // indicates mode: ["light", "dark"]
 
-    // mutations
-    const { makeFile } = useFiles();
-
-    // states
-    const [createNewFile, setCreateNewFile] = useState(false);                              // indicates user hit create file
-    const [filename, setFilename] = useState("");                                           // file name of the file being created
+    // local state    
+                                           // file name of the file being created
     const [selectedFileId, setSelectedFileId] = useState<number | null>(null);              // indicates which file the editor needs to render
     // style
     const textStyle = {
@@ -37,24 +32,6 @@ const Home = () => {
     const selectedFile: FileType | null =
     files.find((f) => f.id === selectedFileId) ?? null;
 
-    const handleNewFile = () => {
-        setCreateNewFile(true);
-    }
-
-    const handleSubmit = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key !== "Enter") return;
-        if (!filename.trim()) return;
-
-        setCreateNewFile(false);
-
-        const newFile = await makeFile(filename);
-        if (!newFile) {
-            return;         // add an error later
-        }
-        setSelectedFileId(newFile.id);
-
-        setFilename("");
-    }
 
     const selectFile = (file: FileType) => {
         if (file.id !== selectedFileId) {
@@ -96,13 +73,9 @@ const Home = () => {
                     selectedFileId={selectedFileId}
                     selectFile={selectFile}
                     dirty={dirty}
-                    createNewFile={createNewFile}
-                    handleNewFile={handleNewFile}
-                    filename={filename}
-                    setFilename={setFilename}
-                    handleSubmit={handleSubmit}
                     theme={theme}
                     textStyle={textStyle}
+                    setSelectedFileId={setSelectedFileId}
                 />
                 <div id="main-content" className="flex flex-col w-full h-full bg-[var(--bg-main)] items-center justify-center">
                     {!selectedFile && <div className="flex flex-col gap-4 items-center text-[var(--file-plus-color)]">

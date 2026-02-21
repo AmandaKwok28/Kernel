@@ -160,7 +160,7 @@ const Sidebar = ({
         setFoldername("");   
     };
 
-    const rootFiles = files.filter(f => f.folder_id == null);
+    const rootFiles = files.filter(f => f.folderId == null);
 
     return (
         <>
@@ -250,7 +250,7 @@ const Sidebar = ({
                 {/* Folders */}
                 {folders.map((folder: FolderType) => {
                     const folderFiles = files.filter(
-                        (f: FileType) => f.folder_id === folder.id
+                        (f: FileType) => f.folderId === folder.id
                     );
 
                     const folderIsDirty = folderFiles.some(

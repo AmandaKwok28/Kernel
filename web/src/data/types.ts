@@ -2,7 +2,7 @@ export type FileType = {
     id: number;
     name: string;
     blocks: BlockType[];
-    folder_id: number | null;
+    folderId: number | null;
 }
 
 export type DirtyType = {
@@ -20,11 +20,6 @@ export type BlockType = {
     language: "python";
     code: string;
     output?: string;
-}
-
-export type ApiResponse<T> = {
-    data: T;
-    message: any;
 }
 
 export type FolderType = {

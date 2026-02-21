@@ -1,4 +1,4 @@
-import type { FolderType, ApiResponse } from "./types";
+import type { FolderType } from "./types";
 import { API_URL } from "@/env";
 
 export async function fetchFolders(): Promise<FolderType[]> {
@@ -8,8 +8,8 @@ export async function fetchFolders(): Promise<FolderType[]> {
         throw new Error(`Failed to fetch folders (${res.status})`);
     }
 
-    const json: ApiResponse<any[]> = await res.json();
-    return json.data.map((folder) => ({
+    const json = await res.json();
+    return json.map((folder: any) => ({
         id: folder.id,
         name: folder.name
     }));
@@ -30,10 +30,10 @@ export async function createFolder(name: string): Promise<FolderType> {
         throw new Error(`Error creating a new folder status ${res.status}`);
     }
 
-    const json: ApiResponse<any> = await res.json();
+    const json = await res.json();
     return {
-        id: json.data.id,
-        name: json.data.name,
+        id: json.id,
+        name: json.name,
     };
 }
 
@@ -54,10 +54,10 @@ export async function updateFolder(
         throw new Error(`Error updating file with status: ${res.status}`);
     }
 
-    const json: ApiResponse<any> = await res.json();
+    const json = await res.json();
     return {
-        id: json.data.id,
-        name: json.data.name,
+        id: json.id,
+        name: json.name,
     };
 }
 

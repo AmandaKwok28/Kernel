@@ -1,4 +1,4 @@
-import type { BlockType, FileType, ApiResponse } from "./types";
+import type { BlockType, FileType } from "./types";
 import { API_URL } from "@/env";
 
 export async function fetchFiles(): Promise<FileType[]> {
@@ -8,18 +8,18 @@ export async function fetchFiles(): Promise<FileType[]> {
         throw new Error(`Failed to fetch files (${res.status})`);
     }
 
-    const json: ApiResponse<any[]> = await res.json();
-    return json.data.map((file) => ({
+    const json = await res.json();
+    return json.map((file: any) => ({
         id: file.id,
         name: file.name,
         blocks: JSON.parse(file.content ?? "[]"),
-        folder_id: file.folder_id,
+        folderId: file.folderId,
     }));
 }
 
 export async function createFile(
     name: string,
-    folder_id?: number
+    folderId?: number
 ): Promise<FileType> {
     const res = await fetch(`${API_URL}/files`, {
         method: "POST",
@@ -28,7 +28,7 @@ export async function createFile(
         },
         body: JSON.stringify({
             name,
-            folder_id,
+            folderId,
             content: JSON.stringify([]),
         })
     })
@@ -37,12 +37,12 @@ export async function createFile(
         console.error("Error creating a new file status", res.status);
     }
 
-    const json: ApiResponse<any> = await res.json();
+    const json = await res.json();
     return {
-        id: json.data.id,
-        name: json.data.name,
-        blocks: JSON.parse(json.data.content ?? "[]"),
-        folder_id: json.data.folder_id
+        id: json.id,
+        name: json.name,
+        blocks: JSON.parse(json.content ?? "[]"),
+        folderId: json.folderId
     };
 }
 
@@ -73,12 +73,12 @@ export async function updateFile(
         console.error("Error updating file with status", res.status);
     }
 
-    const json: ApiResponse<any> = await res.json();
+    const json = await res.json();
     return {
-        id: json.data.id,
-        name: json.data.name,
-        blocks: JSON.parse(json.data.content ?? "[]"),
-        folder_id: json.data.folder_id
+        id: json.id,
+        name: json.name,
+        blocks: JSON.parse(json.content ?? "[]"),
+        folderId: json.folderId
     };
 }
 

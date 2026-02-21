@@ -1,20 +1,19 @@
-import { createFolder, deleteFolder, fetchFolders, updateFolder } from "@/data/folders";
-import { $folders, addFolder, addUpdatedFolder, removeStoreFolder, setFolders } from "@/lib/store"
+import { createFolder, deleteFolder, updateFolder } from "@/data/folders";
+import { $folders, addFolder, addUpdatedFolder, removeStoreFolder } from "@/lib/store"
 import { useStore } from "@nanostores/react"
-import { useEffect } from "react";
 
 export const useFolders = () => {
 
     const folders = useStore($folders);
 
-    const getFolders = async () => {
-        try {
-            const data = await fetchFolders();
-            setFolders(data);
-        } catch (err) {
-            console.error(err);
-        }
-    }
+    // const getFolders = async () => {
+    //     try {
+    //         const data = await fetchFolders();
+    //         setFolders(data);
+    //     } catch (err) {
+    //         console.error(err);
+    //     }
+    // }
 
     const makeFolder = async (name: string) => {
         try {
@@ -45,9 +44,9 @@ export const useFolders = () => {
         }
     }
 
-    useEffect(() => {
-        getFolders();
-    }, [])
+    // useEffect(() => {
+    //     getFolders();
+    // }, [])
 
     return {
         folders,

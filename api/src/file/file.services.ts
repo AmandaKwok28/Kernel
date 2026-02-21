@@ -5,6 +5,7 @@ import { CreateFileDto } from "src/file/dto/create-file.dto";
 import { Repository } from "typeorm";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateFileDto } from "./dto/update-file.dto";
+import { PaginationResult } from "src/types/pagination";
 
 @Injectable()
 export class FileService {
@@ -18,8 +19,20 @@ export class FileService {
     ) {}
 
     // fetch all files
-    async findAll(): Promise<File[]> {
-        return this.fileRepository.find();
+    async findAll(page: number = 1, limit: number = 20): Promise<PaginationResult<File>> {
+        const [data, total] = await this.fileRepository.findAndCount({
+            relations: ['folder'],                                          // tells typeORM to also return the corresponding folders
+            skip: (page - 1) * limit,                                       // this is the offset for page indexing. it's page - 1 because we're 0 indexed not 1 indexed
+            take: limit,                                                    // indicates number of rows max
+            order: { created_at: 'DESC' }                                   // descending by creation date
+        });
+
+        return {
+            data,
+            total,
+            page,
+            lastPage: Math.ceil(total / limit)
+        };
     };
 
     // get by id

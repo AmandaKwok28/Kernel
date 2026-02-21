@@ -1,19 +1,20 @@
-import type { BlockType, FileType } from "./types";
+import type { BlockType, FileType, PaginationData, PaginationResult } from "./types";
 import { API_URL } from "@/env";
 
-export async function fetchFiles(): Promise<FileType[]> {
+export async function fetchFiles(): Promise<PaginationData[]> {
     const res = await fetch(`${API_URL}/files`);
 
     if (!res.ok) {
         throw new Error(`Failed to fetch files (${res.status})`);
     }
 
-    const json = await res.json();
-    return json.map((file: any) => ({
+    const json: PaginationResult = await res.json();
+    return json.data.map((file: any) => ({
         id: file.id,
         name: file.name,
         blocks: JSON.parse(file.content ?? "[]"),
         folderId: file.folderId,
+        folder: file.folder,
     }));
 }
 

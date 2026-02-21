@@ -1,6 +1,6 @@
 import { createFile, deleteFile, fetchFiles, updateFile } from "@/data/files"
-import type { BlockType } from "@/data/types";
-import { $files, addFile, addUpdatedFile, removeStoreFile, setFiles } from "@/lib/store";
+import type { BlockType, FolderType, PaginationData } from "@/data/types";
+import { $files, addFile, addUpdatedFile, removeStoreFile, setFiles, setFolders } from "@/lib/store";
 import { useStore } from "@nanostores/react";
 import { useEffect } from "react";
 
@@ -12,8 +12,26 @@ export const useFiles = () => {
 
     const getFiles = async () => {
         try {
-            const data = await fetchFiles();
-            setFiles(data);
+            const res = await fetchFiles();
+            setFiles(res.map((data: PaginationData) => ({
+                id: data.id,
+                name: data.name,
+                blocks: data.blocks,
+                folderId: data.folderId
+            })));
+
+            // set the folders as well
+            const folders = Array.from(
+                new Map(
+                    res
+                        .map(file => file.folder)
+                        .filter((folder): folder is FolderType => folder !== null)
+                        .map(folder => [folder.id, folder])
+                ).values()
+            );
+
+            setFolders(folders);
+
         } catch (err) {
             console.log(err);
         } 

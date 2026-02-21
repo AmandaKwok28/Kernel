@@ -26,3 +26,27 @@ export type FolderType = {
     id: number;
     name: string;
 }
+
+
+export type PaginationResult = {
+    data: PaginatedFiles[],
+    total: number;
+    page: number;
+    lastPage: number;
+}
+
+export type PaginatedFiles = {
+    id: number;
+    name: string;
+    content: string;
+    folder: FolderType | null;
+    folderId: number | null;  
+}
+
+export type PaginationData = {
+    id: number;
+    name: string;
+    blocks: BlockType[];
+    folder: FolderType | null;
+    folderId: number | null;
+}

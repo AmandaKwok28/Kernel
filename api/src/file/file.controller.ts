@@ -3,6 +3,7 @@ import { FileService } from './file.services';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { File } from './entity/file.entity';
+import { PaginationResult } from 'src/types/pagination';
 
 // all routes start with file
 @Controller('files')
@@ -10,7 +11,7 @@ export class FileController {
     constructor(private readonly fileService: FileService) {}      // inject our file service
 
     @Get()
-    findAll(): Promise<File[]> {
+    findAll(): Promise<PaginationResult<File>> {
         return this.fileService.findAll();
     }
 

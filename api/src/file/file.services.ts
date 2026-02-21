@@ -62,7 +62,7 @@ export class FileService {
             }) ?? undefined;
 
             if (!folder) {
-                throw new NotFoundException('File not found.');
+                throw new NotFoundException('Folder not found.');
             }
         }
         
@@ -91,6 +91,17 @@ export class FileService {
             dto.folderId == undefined
         ) {
             throw new Error('At least one filed must be provided');
+        }
+
+        // todo: attach the folder to the response eventually
+        if (dto.folderId != null) {
+            const folder = await this.folderRepository.findOne({ 
+                where: { id: dto.folderId } 
+            }) ?? undefined;
+
+            if (!folder) {
+                throw new NotFoundException('Cannot place file in undefined folder.');
+            }
         }
 
         // copies properties from the src to the target: Object.assign(target, src)

@@ -9,5 +9,5 @@ export class CreateFileDto {
     content: string;
 
     @IsInt()
-    folderId: number | null;        // not all files need to be in a folder
+    folderId?: number;        // not all files need to be in a folder
 }

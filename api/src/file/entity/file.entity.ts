@@ -21,12 +21,13 @@ export class File {
     // a file belongs to one folder
     @ManyToOne(() => Folder, (folder) => folder.files, {
         onDelete: 'CASCADE',                                    // if the folder is deleted, delete all its files
+        nullable: true,                                         // allows file to be created without a folder
     })
 
     // typeORM creates this foreign key column by default but we want to specify its name which is why we write it ourselves
     @JoinColumn({ name: "folder_id" })
-    folder: Folder                                              // property on the File that represents the related Folder object
+    folder?: Folder;                                     // property on the File that represents the related Folder object
 
     @RelationId((file: File) => file.folder) 
-    folderId: number;
+    folderId?: number;
 }

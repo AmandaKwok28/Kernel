@@ -33,7 +33,7 @@ export class FileService {
         // optional search
         if (search) {
             query.andWhere(
-                '(file.name ILIKE :search OR file.content ILIKE :search)',      // case insensitive search with substring matching
+                '(file.name LIKE :search OR file.content LIKE :search)',      // case insensitive search with substring matching
                 { search: `%${search}%` }
             );
         };

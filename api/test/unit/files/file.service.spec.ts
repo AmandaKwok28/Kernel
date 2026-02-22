@@ -171,7 +171,7 @@ describe('FileService (unit)', () => {
             expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
             expect(mockQueryBuilder.getMany).toHaveBeenCalled();
             expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-                '(file.name ILIKE :search OR file.content ILIKE :search)',
+                '(file.name LIKE :search OR file.content LIKE :search)',
                 { search: `%${search}%`}
             )
             

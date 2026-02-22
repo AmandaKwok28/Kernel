@@ -30,9 +30,11 @@ export type FolderType = {
 
 export type PaginationResult = {
     data: PaginatedFiles[],
-    total: number;
-    page: number;
-    lastPage: number;
+    meta?: {
+        total: number;
+        page: number;
+        lastPage: number;
+    }
 }
 
 export type PaginatedFiles = {
@@ -43,10 +45,3 @@ export type PaginatedFiles = {
     folderId: number | null;  
 }
 
-export type PaginationData = {
-    id: number;
-    name: string;
-    blocks: BlockType[];
-    folder: FolderType | null;
-    folderId: number | null;
-}

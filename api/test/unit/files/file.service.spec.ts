@@ -130,9 +130,11 @@ describe('FileService (unit)', () => {
 
             expect(res).toEqual({
                 data: mockFiles,
-                total,
-                page,
-                lastPage: Math.ceil(total / limit)
+                meta: {
+                    total,
+                    page,
+                    lastPage: Math.ceil(total / limit)
+                }
             })
         });
 
@@ -150,7 +152,9 @@ describe('FileService (unit)', () => {
             expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
             expect(mockQueryBuilder.getMany).toHaveBeenCalled();
 
-            expect(res).toEqual(mockFiles);
+            expect(res).toEqual({
+                data: mockFiles
+            });
         });
 
         it('test search', async () => {
@@ -171,7 +175,7 @@ describe('FileService (unit)', () => {
                 { search: `%${search}%`}
             )
             
-            expect(res).toEqual(mockFiles);
+            expect(res).toEqual({ data: mockFiles });
         })
 
         it('test search and paginate', async () => {
@@ -198,9 +202,11 @@ describe('FileService (unit)', () => {
 
             expect(res).toEqual({
                 data: mockFiles,
-                total,
-                page,
-                lastPage: Math.ceil(total / limit)
+                meta: {
+                    total,
+                    page,
+                    lastPage: Math.ceil(total / limit)
+                }
             });
 
         })

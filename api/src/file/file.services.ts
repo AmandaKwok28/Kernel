@@ -23,7 +23,7 @@ export class FileService {
         search?: string,
         page?: number, 
         limit?: number,
-    ): Promise<PaginationResult<File> | File[]> {
+    ): Promise<PaginationResult<File>> {
 
         const query = this.fileRepository
             .createQueryBuilder('file')
@@ -55,14 +55,20 @@ export class FileService {
 
             return {
                 data,
-                total,
-                page,
-                lastPage: Math.ceil(total / limit)
+                meta: {
+                    total,
+                    page,
+                    lastPage: Math.ceil(total / limit)
+                }                
             };
         }
 
+        const data = await query.getMany();
+
         // no pagination
-        return query.getMany();
+        return {
+            data,
+        };
     };
 
     // get by id

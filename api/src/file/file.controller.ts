@@ -15,7 +15,7 @@ export class FileController {
         @Query('search') search?: string,
         @Query('page') page?: string,
         @Query('limit') limit? : string,
-    ): Promise<PaginationResult<File> | File[]> {
+    ): Promise<PaginationResult<File>> {
 
         const parsedPage = page !== undefined ? Number(page) : undefined;
         const parsedLimit = limit !== undefined ? Number(limit) : undefined;

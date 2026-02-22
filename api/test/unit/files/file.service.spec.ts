@@ -45,6 +45,7 @@ describe('FileService (unit)', () => {
         create: jest.Mock;
         save: jest.Mock;
         delete: jest.Mock;
+        createQueryBuilder: jest.Mock;
     };
 
     // similarly define the file repo (we only use findOne)
@@ -85,61 +86,125 @@ describe('FileService (unit)', () => {
     // testing the actual services
     describe('findAll', () => {
 
-        // testing pagination
+        let mockQueryBuilder: any;
+
+        beforeEach(() => {
+            mockQueryBuilder = {
+                leftJoinAndSelect: jest.fn().mockReturnThis(),
+                orderBy: jest.fn().mockReturnThis(),
+                andWhere: jest.fn().mockReturnThis(),
+                skip: jest.fn().mockReturnThis(),
+                take: jest.fn().mockReturnThis(),
+                getManyAndCount: jest.fn(),
+                getMany: jest.fn(),
+            };
+
+            // override the current createQueryBuilder from the utility
+            fileRepository.createQueryBuilder = jest
+                .fn()
+                .mockReturnValue(mockQueryBuilder);
+        });
+            
+
+        // testing optional pagination
         it('returns paginated result', async () => {
 
             // mock two files
             const mockFiles = Array.from({ length: 2 }, () => createMockFile());
-            const total = 42;
+            const total = 42;            
+            const page = 3;
+            const limit = 20;            
 
-            // here, we indicate that findAndCount call should return the following mocked values when we eventually call it
-            fileRepository.findAndCount.mockResolvedValue([mockFiles, total]);
+            // mock the value used
+            mockQueryBuilder.getManyAndCount.mockResolvedValue([mockFiles, total]);
 
-            const page = 2;
-            const limit = 20;
+            // make the service call in this case with no search query param
+            const res = await service.findAll(undefined, page, limit);
 
-            // we query our service which will run through its defined business logic using our mocked repository functions
-            // and our mocked return value above in line 83
-            const res = await service.findAll(page, limit);
+            // test the business logic
+            expect(mockQueryBuilder.skip).toHaveBeenLastCalledWith((page - 1) * limit);
+            expect(mockQueryBuilder.take).toHaveBeenCalledWith(limit);
+            expect(fileRepository.createQueryBuilder).toHaveBeenCalledWith('file');
+            expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('file.folder', 'folder')
+            expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
 
-            // since our jest.fn() tracks calls, we can check what logic it used
-            expect(fileRepository.findAndCount).toHaveBeenCalledWith({
-                relations: ['folder'],
-                skip: (page - 1) * limit,
-                take: limit,
-                order: { created_at: 'DESC' }
-            });
-
-            // we can also check the return value after it has run through that logic
             expect(res).toEqual({
                 data: mockFiles,
                 total,
                 page,
-                lastPage: Math.ceil(total / limit),
-            });
+                lastPage: Math.ceil(total / limit)
+            })
         });
 
 
-        it('uses default page/limit when not provided', async () => {
+        it('test that it defaults to no pagination and no search', async () =>  {
 
-            fileRepository.findAndCount.mockResolvedValue([[], 0]);
+            const mockFiles = Array.from({ length: 2 }, () => createMockFile());
+            
+            mockQueryBuilder.getMany.mockResolvedValue(mockFiles);
+
             const res = await service.findAll();
 
-            expect(fileRepository.findAndCount).toHaveBeenCalledWith({
-                relations: ['folder'],
-                skip: 0,
-                take: 20,
-                order: { created_at: 'DESC' },
-            });
+            expect(fileRepository.createQueryBuilder).toHaveBeenCalledWith('file');
+            expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('file.folder', 'folder')
+            expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
+            expect(mockQueryBuilder.getMany).toHaveBeenCalled();
+
+            expect(res).toEqual(mockFiles);
+        });
+
+        it('test search', async () => {
+
+            const mockFiles = Array.from({ length: 2 }, () => createMockFile({ name: 'search-test' }));
+            const search = 'Search';
+
+            mockQueryBuilder.getMany.mockResolvedValue(mockFiles);
+
+            const res = await service.findAll(search);
+
+            expect(fileRepository.createQueryBuilder).toHaveBeenCalledWith('file');
+            expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('file.folder', 'folder')
+            expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
+            expect(mockQueryBuilder.getMany).toHaveBeenCalled();
+            expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+                '(file.name ILIKE :search OR file.content ILIKE :search)',
+                { search: `%${search}%`}
+            )
+            
+            expect(res).toEqual(mockFiles);
+        })
+
+        it('test search and paginate', async () => {
+
+            const mockFiles = Array.from({ length: 2 }, () => createMockFile({ name: 'search-test' }));
+            const search = 'Search';
+            const total = 42;            
+            const page = 3;
+            const limit = 20;  
+
+            mockQueryBuilder.getManyAndCount.mockResolvedValue([mockFiles, total]);
+
+            const res = await service.findAll(search, page, limit);
+
+            expect(mockQueryBuilder.skip).toHaveBeenLastCalledWith((page - 1) * limit);
+            expect(mockQueryBuilder.take).toHaveBeenCalledWith(limit);
+            expect(fileRepository.createQueryBuilder).toHaveBeenCalledWith('file');
+            expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('file.folder', 'folder')
+            expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
+            expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+                '(file.name ILIKE :search OR file.content ILIKE :search)',
+                { search: `%${search}%`}
+            )
 
             expect(res).toEqual({
-                data: [],
-                total: 0,
-                page: 1,
-                lastPage: 0,
+                data: mockFiles,
+                total,
+                page,
+                lastPage: Math.ceil(total / limit)
             });
 
-        });
+        })
+
     });
 
     describe('findOne', () => {

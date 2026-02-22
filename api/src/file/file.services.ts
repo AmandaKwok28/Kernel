@@ -3,7 +3,7 @@ import { Folder } from "src/folder/entity/folder.entity";
 import { File } from "src/file/entity/file.entity";
 import { CreateFileDto } from "src/file/dto/create-file.dto";
 import { Repository } from "typeorm";
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { UpdateFileDto } from "./dto/update-file.dto";
 import { PaginationResult } from "src/types/pagination";
 
@@ -19,20 +19,50 @@ export class FileService {
     ) {}
 
     // fetch all files
-    async findAll(page: number = 1, limit: number = 20): Promise<PaginationResult<File>> {
-        const [data, total] = await this.fileRepository.findAndCount({
-            relations: ['folder'],                                          // tells typeORM to also return the corresponding folders
-            skip: (page - 1) * limit,                                       // this is the offset for page indexing. it's page - 1 because we're 0 indexed not 1 indexed
-            take: limit,                                                    // indicates number of rows max
-            order: { created_at: 'DESC' }                                   // descending by creation date
-        });
+    async findAll(
+        search?: string,
+        page?: number, 
+        limit?: number,
+    ): Promise<PaginationResult<File> | File[]> {
 
-        return {
-            data,
-            total,
-            page,
-            lastPage: Math.ceil(total / limit)
+        const query = this.fileRepository
+            .createQueryBuilder('file')
+            .leftJoinAndSelect('file.folder', 'folder')                         // ensures we get the folder entity back in our return
+            .orderBy('file.created_at', 'DESC');
+
+        // optional search
+        if (search) {
+            query.andWhere(
+                '(file.name ILIKE :search OR file.content ILIKE :search)',      // case insensitive search with substring matching
+                { search: `%${search}%` }
+            );
         };
+
+        // bad request
+        if (
+            (page !== undefined && limit === undefined) || 
+            (page === undefined && limit !== undefined)
+        ) {
+            throw new BadRequestException('Both page and limit must be provided together for pagination.');
+        }
+
+        // optional pagination
+        if (page !== undefined && limit !== undefined) {
+            query.skip((page - 1) * limit);
+            query.take(limit);
+
+            const [data, total] = await query.getManyAndCount();
+
+            return {
+                data,
+                total,
+                page,
+                lastPage: Math.ceil(total / limit)
+            };
+        }
+
+        // no pagination
+        return query.getMany();
     };
 
     // get by id

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Delete, Param, ParseIntPipe, Patch } from '@nestjs/common';
+import { Controller, Post, Get, Body, Delete, Param, ParseIntPipe, Patch, Query } from '@nestjs/common';
 import { FileService } from './file.services';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -11,8 +11,20 @@ export class FileController {
     constructor(private readonly fileService: FileService) {}      // inject our file service
 
     @Get()
-    findAll(): Promise<PaginationResult<File>> {
-        return this.fileService.findAll();
+    findAll(
+        @Query('search') search?: string,
+        @Query('page') page?: string,
+        @Query('limit') limit? : string,
+    ): Promise<PaginationResult<File> | File[]> {
+
+        const parsedPage = page !== undefined ? Number(page) : undefined;
+        const parsedLimit = limit !== undefined ? Number(limit) : undefined;
+
+        return this.fileService.findAll(
+            search,
+            parsedPage,
+            parsedLimit,
+        );
     }
 
     @Get(':id')

@@ -16,22 +16,6 @@ import { createMockRepository } from 'test/utils/mock-repository';
 // In Nest.js docs, they test controller routing logic which is why they mock the service but we're looking to test the service
 
 
-/* testing pattern:
-
-    - identify a situation, ex: updating a file with invalid folder
-    - use the following testing pattern
-
-        1. mock any data you'll be operating on or using as an expected return value
-        2. mock the resolved value for any repository functions your service may call as a part of its business logic
-        3. make the service call
-        4. check the business logic using .toHaveBeenCalledWith 
-        5. check the expected return value
-            - this includes exceptions that were thrown 
-            - exception messages they were thrown with
-
-*/
-
-
 describe('FileService (unit)', () => {
 
     let service: FileService;
@@ -196,7 +180,7 @@ describe('FileService (unit)', () => {
             expect(mockQueryBuilder.leftJoinAndSelect).toHaveBeenCalledWith('file.folder', 'folder')
             expect(mockQueryBuilder.orderBy).toHaveBeenCalledWith('file.created_at', 'DESC');
             expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
-                '(file.name ILIKE :search OR file.content ILIKE :search)',
+                '(file.name LIKE :search OR file.content LIKE :search)',
                 { search: `%${search}%`}
             )
 

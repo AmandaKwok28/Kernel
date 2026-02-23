@@ -43,26 +43,16 @@ cd web
 cp .env.example .env
 ```
 
-## Backend Setup (Database + Migrations)
-```bash
-cd api/src/db
-touch app.db     # or on a windows machine, just create a new file called app.db
-
-# to initialize the database
-cd api
-pnpm db:init
-```
-
 
 ## Running the Application
 ```bash
 # backend
 cd api
-pnpm start          # in terminal 1
+pnpm run start          # in terminal 1 (will create the database if one doesn't exist already)
 
 # frontend
 cd web
-pnpm dev            # in terminal 2
-pnpm electron       # in terminal 3
+pnpm dev                # in terminal 2
+pnpm electron           # in terminal 3
 ```
 ---

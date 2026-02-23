@@ -7,7 +7,7 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-3776ab)
 ![Status](https://img.shields.io/badge/status-active%20development-yellow)
 
-**Kernel** is a desktop notebook application that combines markdown-based note-taking with executable code blocks, designed for technical thinking, experimentation, and iterative work.
+**Kernel** is a customizable desktop notebook that sits somewhere between notion and jupyter notebook. Built this because I don't like notion's color scheme oop.
 
 <p align="center">
   <img src="web/assets/app-image.png" width="800" />
@@ -72,77 +72,3 @@ pnpm dev            # in terminal 2
 pnpm electron       # in terminal 3
 ```
 ---
-
-## Why Kernel?
-
-Most tools force a tradeoff:
-- **Markdown apps** are great for writing, but weak for computation
-- **Jupyter notebooks** are powerful, but fragile, messy, and browser-bound
-- **Code editors** are great for code, but awkward for narrative thinking
-
-Kernel is an attempt to close that gap:
-- Write like you’re thinking
-- Run code inline
-- Keep outputs deterministic
-- Stay local, fast, and debuggable
-
----
-
-## Core Features
-
-- **Markdown-first notes**  
-  Write structured notes with headings, lists, math, and code blocks.
-
-- **Executable code blocks**  
-  Run code directly inside notes and render outputs inline.
-
-- **Isolated execution model**  
-  Code execution is sandboxed from the UI via IPC, avoiding UI freezes and keeping runs deterministic.
-
-- **Local-first persistence**  
-  Notes and outputs are stored locally—no cloud dependency, no sync surprises.
-
-- **Modular architecture**  
-  The app is designed so execution backends, rendering logic, and UI components are cleanly separated.
-
----
-
-## Architecture Overview
-
-Kernel is built as a **desktop Electron application** with a clear separation of concerns:
-
-### Frontend
-- React + TypeScript
-- Markdown rendering with executable blocks
-- Deterministic output rendering
-- Local state management (no backend server)
-
-### Execution Layer
-- Python execution isolated from the UI
-- IPC-based communication between renderer and execution process
-- Controlled input/output handling for reproducibility
-
-### Desktop Runtime
-- Electron provides filesystem access, process isolation, and native performance
-- Designed to feel like a real app, not a wrapped website
-
----
-
-## Current Status
-
-Kernel is under active development.
-
-Current focus areas:
-- Stabilizing the execution model
-- Improving block-level UX (editing, running, re-running)
-- Making output rendering predictable and debuggable
-- Refining the desktop experience (layout, performance, polish)
-  - Allow folder / file dragging
-  - Allow multiselect for files like in VsCode
-
-This is not yet a packaged, end-user product—it’s a systems-oriented project to learn the basics behind 
-what goes into an editor. Also, having a customizable note taking application is nice because notion's 
-code block color theme is terrible. 
-
-
-

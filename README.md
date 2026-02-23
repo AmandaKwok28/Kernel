@@ -7,18 +7,12 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-3776ab)
 ![Status](https://img.shields.io/badge/status-active%20development-yellow)
 
-**Kernel** is a customizable desktop notebook that sits somewhere between notion and jupyter notebook. Built this because I don't like notion's color scheme oop.
+**Kernel** is a customizable desktop notebook that sits somewhere between VsCode editor and jupyter notebook. Built this because I don't like notion's color scheme and VsCode is great but not for notes.
+I love notion, but the color scheme and font aren't as nice as the github dark plugins you can get on VsCode. 
 
 <p align="center">
   <img src="web/assets/app-image.png" width="800" />
 </p>
-
-It sits somewhere between **Jupyter**, **Obsidian**, and **VS Code**—but optimized for local, reproducible execution and structured technical notes rather than documents or blogs.
-
-Kernel is built as a desktop app to give users:
-- Full control over execution
-- Predictable local state
-- A fast, focused writing + coding workflow without browser constraints
 
 ---
 
@@ -49,26 +43,16 @@ cd web
 cp .env.example .env
 ```
 
-## Backend Setup (Database + Migrations)
-```bash
-cd api/src/db
-touch app.db     # or on a windows machine, just create a new file called app.db
-
-# to initialize the database
-cd api
-pnpm db:init
-```
-
 
 ## Running the Application
 ```bash
 # backend
 cd api
-pnpm start          # in terminal 1
+pnpm run start          # in terminal 1 (will create the database if one doesn't exist already)
 
 # frontend
 cd web
-pnpm dev            # in terminal 2
-pnpm electron       # in terminal 3
+pnpm dev                # in terminal 2
+pnpm electron           # in terminal 3
 ```
 ---
